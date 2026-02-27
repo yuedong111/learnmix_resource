@@ -1,0 +1,1558 @@
+# OpenClaw Intermediate to Advanced Complete Tutorial
+
+**Last Updated: February 2026**
+
+## Table of Contents
+- [Tutorial Overview: Who Should Learn](#tutorial-overview-who-should-learn)
+- [Learning Path: From Basics to Advanced](#learning-path-from-basics-to-advanced)
+- [Core Configuration: AGENTS.md - The AI's Work Rules](#core-configuration-agentsmd---the-ais-work-rules)
+- [Memory Optimization: Building a Reliable Memory System](#memory-optimization-building-a-reliable-memory-system)
+- [Sub-Agent Application: Team Collaboration Mode](#sub-agent-application-team-collaboration-mode)
+- [Scheduled Tasks: Cron Automation Practices](#scheduled-tasks-cron-automation-practices)
+- [Skill Development: Expanding AI Capabilities](#skill-development-expanding-ai-capabilities)
+- [Multi-Platform Deployment: All-Access Integration Guide](#multi-platform-deployment-all-access-integration-guide)
+- [Performance Tuning: Configuration Parameters Explained](#performance-tuning-configuration-parameters-explained)
+- [Hands-on Practice Checklist](#hands-on-practice-checklist)
+- [Troubleshooting](#troubleshooting)
+- [Advanced Learning Resources](#advanced-learning-resources)
+
+## Tutorial Overview: Who Should Learn
+
+### Prerequisites
+This tutorial is designed for users who have already completed the basic configuration of OpenClaw. Before you begin, please confirm that you have:
+✅ Successfully installed OpenClaw and can run it normally
+✅ Completed the creation of basic configuration files (`SOUL.md` / `USER.md` / `IDENTITY.md`)
+✅ Understand the basic concepts of the memory system (`MEMORY.md` and `memorySearch`)
+✅ Are familiar with the `workspace` directory structure
+✅ Possess basic command-line operation skills
+
+If the above conditions are not met, it is recommended to first read [https://x.com/onehopeA9/status/2025934420893708433](https://x.com/onehopeA9/status/2025934420893708433) (Link to basic tutorial)
+
+### Technical Requirements
+- OpenClaw installed and running normally
+- At least one AI model API (Claude or GPT)
+- Understanding of JSON and Markdown formats
+- Basic file system operation skills
+
+### What You Will Learn
+After completing this tutorial, your OpenClaw will achieve the following capability improvements:
+
+| Module | Before | After |
+|--------|--------|-------|
+| Work Specifications | AI understands its role, but lacks process | Clear work flow, standardized memory writing |
+| Memory System | Basic memory, but easy to forget | Multi-layer memory, automatic summarization, precise recall |
+| Task Processing | Single-threaded serial execution | Multi-threaded parallel, team collaboration |
+| Automation | Manual triggering only | Scheduled tasks, proactive execution |
+| Capability Expansion | Limited built-in tools | Custom Skills, third-party integration |
+| Access Channels | Single interface | Multi-platform simultaneous access |
+
+## Learning Path: From Basics to Advanced
+
+### Recommended Learning Sequence
+
+**Phase 1: Establish Work Specifications (30-60 minutes)**
+- Create `AGENTS.md` work manual
+- Define session startup process
+- Set memory writing specifications
+- Configure safety boundaries
+
+**Phase 2: Memory System Optimization (60-120 minutes)**
+- Enable `memoryFlush` to prevent information loss
+- Optimize log format for improved retrieval accuracy
+- Configure automatic maintenance mechanisms
+- Adjust embedding model
+
+**Phase 3: Advanced Feature Application (120-240 minutes)**
+- Deploy sub-Agents for task distribution
+- Create Cron scheduled tasks
+- Develop custom Skills
+- Configure multi-channel access
+
+**Phase 4: Performance Tuning (1-2 days)**
+- Adjust model parameters
+- Optimize token usage
+- Configure caching strategies
+- Monitor system performance
+
+### Learning Suggestions
+- **Follow Step-by-Step:** Don't skip foundational steps; each configuration serves a purpose.
+- **Practice and Verify:** After completing each configuration, test immediately to verify the effect.
+- **Document Issues:** Record problems promptly for later troubleshooting.
+- **Backup Configurations:** Back up configuration files before making important changes.
+
+## Core Configuration: AGENTS.md - The AI's Work Rules
+
+### Why is `AGENTS.md` Needed?
+
+In the basic tutorial, we created `SOUL.md` (describing the AI's personality), `USER.md` (describing user information), and `IDENTITY.md` (defining identity). However, these files only address "who the AI is" and "who the user is," not "how the AI should work."
+
+The role of `AGENTS.md` is to define the AI's workflow and behavioral guidelines, similar to an employee handbook. It tells the AI:
+- Which files should be read at each startup
+- How memories should be organized and stored
+- Which operations require user confirmation
+- How to handle different types of tasks
+
+**Analogy:**
+- `SOUL.md` → Personal Personality Profile
+- `USER.md` → Client Information
+- `IDENTITY.md` → Identity Badge
+- `AGENTS.md` → Workflow Manual
+
+### Session Startup Configuration
+
+Each time OpenClaw starts a new session, it is in an "initial state" and needs to restore memory and context by reading files. A reasonable startup process ensures the AI quickly gets into work mode.
+
+**Configuration File Location:** `workspace/AGENTS.md`
+
+**Startup Process Configuration:**
+```markdown
+## Session Startup Process
+Every time a session starts, automatically execute in the following order:
+1. Read `SOUL.md` - Load personality and behavior style
+2. Read `USER.md` - Understand user background and preferences
+3. Read `memory/YYYY-MM-DD.md` - Load today's and yesterday's logs
+4. If it's a main session: additionally read `MEMORY.md` - Load core memory index
+The above operations are performed automatically without asking.
+```
+
+**Configuration Explanation:**
+
+- **Steps 1-2: Load Basic Information**
+  `SOUL.md` and `USER.md` are usually small (<1KB). Reading them every session does not cause performance issues. These two files ensure the AI knows its role.
+
+- **Step 3: Load Recent Logs**
+  Reading today's and yesterday's log files allows the AI to quickly understand recent events. Including yesterday's logs is important because if the current time is early morning, today's log might still be empty.
+
+- **Step 4: Conditional Loading of Core Memory**
+  `MEMORY.md` may contain sensitive information (like server configurations, API keys), so it is only loaded in main sessions. OpenClaw supports multiple session types:
+  - **Main Session:** Direct user conversation (e.g., Discord DM, WebChat)
+  - **Group Chat Session:** Multi-person group conversations
+  - **Sub-Agent Session:** Sub-task execution sessions
+  - **Cron Session:** Sessions triggered by scheduled tasks
+
+The AI automatically identifies the current session type; you only need to define the rules in `AGENTS.md`.
+
+### Memory Management Specifications
+
+OpenClaw's memory system uses a layered design, where different types of information are stored in different files. Clearly defining memory management specifications in `AGENTS.md` ensures information is archived correctly.
+
+**Memory Hierarchy Structure:**
+```markdown
+## Memory
+You wake up fresh each session. These files are your continuity.
+
+### Memory Layers
+| Layer | File | Purpose |
+|-------|------|---------|
+| Index | `MEMORY.md` | User overview, capability summary, memory index. Keep concise (<40 lines) |
+| Project | `memory/projects.md` | Current status and todos for each project |
+| Infrastructure | `memory/infra.md` | Quick reference for server, API, deployment configs |
+| Lessons | `memory/lessons.md` | Pitfalls encountered, graded by severity |
+| Logs | `memory/YYYY-MM-DD.md` | Daily raw records |
+
+### Writing Rules
+- **Logs:** Write daily events to `memory/YYYY-MM-DD.md` using the format:
+```markdown
+[Project: Name] Event Title
+**Result:** One-sentence summary
+**Related Files:** File paths
+**Lessons Learned:** Key points (if any)
+**Tags:** #tag1 #tag2
+```
+
+**Layered Writing Rules:**
+- Events of the day → Write to `memory/YYYY-MM-DD.md`
+- Project status changes → Synchronously update `memory/projects.md`
+- Problems encountered and solutions → Record in `memory/lessons.md`
+- Core information changes → Update `MEMORY.md` index
+
+**Important Principles:**
+- Record conclusions, not the entire process
+- Use tags for easier retrieval
+- Keep `MEMORY.md` concise (<40 lines)
+- Information you want to remember MUST be written to a file, don't rely on "keeping it in mind"
+
+**Log Quality Comparison:**
+
+❌ **Low-Quality Log Example:**
+```markdown
+### Today's Work
+Today I configured the server. First I tried plan A but it didn't work, got an error.
+Then I tried plan B, still had problems. Finally I used plan C, spent two hours and finally got it done. The config file is in /etc/config/app.conf. Need to debug other functions tomorrow.
+```
+
+✅ **High-Quality Log Example:**
+```markdown
+### [Project: WebApp] Server Deployment Completed
+- **Result**: Successfully deployed using Nginx reverse proxy, listening on port 443
+- **Related Files**: `/etc/nginx/sites-available/webapp.conf`
+- **Lessons Learned**: Plans A and B failed due to port conflicts; using a reverse proxy is mandatory
+- **Tags**: #webapp #nginx #deployment
+```
+
+**Advantages of High-Quality Logs:**
+- High information density, key conclusions visible at a glance
+- Tags facilitate subsequent retrieval via `memorySearch`
+- Structured format is easy for the AI to parse and understand
+
+### Safety and Permission Boundaries
+
+Defining clear safety boundaries prevents the AI from performing dangerous operations or leaking sensitive information.
+
+```markdown
+## Safety Specifications
+
+### Basic Principles
+- Do not leak private data or sensitive information
+- Must confirm before executing destructive operations
+- Use `trash` instead of `rm` for deletions (recoverable is better than permanent)
+- When unsure, ask the user first
+
+### Operation Permission Levels
+
+**Operations Allowed Freely:**
+- Reading files, browsing directories
+- Searching the internet
+- Checking calendar and email
+- Working within the `workspace` directory
+
+**Operations Requiring User Confirmation:**
+- Sending emails, tweets, public messages
+- Any operation that sends data externally
+- Deleting or modifying important files
+- Operations with uncertain consequences
+
+### Group Chat Behavior Guidelines
+In group chat environments:
+- You can access the user's files and memories, but cannot share them in the group chat
+- You are a participant in the group chat, not the user's spokesperson
+- Do not speak on behalf of the user or leak the user's private information
+```
+
+### Complete `AGENTS.md` Template
+
+Here is a complete template you can use directly. Save it as `workspace/AGENTS.md`:
+
+```markdown
+# AGENTS.md - Workspace Specifications
+This is your workspace, please follow these specifications.
+
+## Session Startup Process
+Every time a session starts, automatically execute in the following order:
+1. Read `SOUL.md` - Load personality and behavior style
+2. Read `USER.md` - Understand user background and preferences
+3. Read `memory/YYYY-MM-DD.md` - Load today's and yesterday's logs
+4. If it's a main session: additionally read `MEMORY.md` - Load core memory index
+The above operations are performed automatically without asking.
+
+## Memory Management Specifications
+You start fresh each session; these files are your memory continuity.
+
+| Layer | File Path | Stored Content |
+|-------|-----------|----------------|
+| Index | `MEMORY.md` | Core information and memory index, keep concise |
+| Project | `memory/projects.md` | Current project status and todos |
+| Lessons | `memory/lessons.md` | Problem solutions, graded by importance |
+| Logs | `memory/YYYY-MM-DD.md` | Detailed daily records |
+
+### Writing Rules
+- Write logs to `memory/YYYY-MM-DD.md`, record conclusions, not the process
+- When projects change, synchronously update `memory/projects.md`
+- When encountering problems, record in `memory/lessons.md`
+- Update `MEMORY.md` only when the index changes
+- Important information MUST be written to files, don't rely on memory
+
+### Log Format
+```markdown
+[Project: Name] Event Title
+**Result:** One-sentence summary
+**Related Files:** File paths
+**Lessons Learned:** Key points (if any)
+**Tags:** #tag1 #tag2
+```
+
+## Safety Specifications
+- Do not leak private data
+- Must confirm before destructive operations
+- Use `trash` instead of `rm`
+- When unsure, ask first
+
+**Allowed Freely:** Reading files, searching, organizing, working within workspace
+**Requires Confirmation:** Sending emails/messages, any operation that sends data externally
+
+## Group Chat Rules
+You can access the user's files and memories, but cannot share them in the group chat.
+In group chats, you are a participant, not the user's spokesperson.
+
+## Tool Usage
+Skills provide your tool capabilities. When you need to use a specific tool, check its `SKILL.md` documentation.
+```
+
+📋 **Practice Task 1: Create `AGENTS.md`**
+
+**Task Goal:**
+- Create the `AGENTS.md` file in the workspace root directory
+- Copy the template above and adjust it according to your actual needs
+- Restart OpenClaw and verify the configuration is effective
+
+**Verification Method:**
+1. Start a new session
+2. Observe if the AI automatically reads the specified files
+3. Ask the AI to record something, check if it's written to the correct file and in the correct format
+
+✅ **Completion Criteria:**
+- `AGENTS.md` file created successfully
+- AI automatically reads memory files according to specifications
+- AI writes logs conforming to the specified format
+
+## Memory Optimization: Building a Reliable Memory System
+
+### Current Situation Analysis
+
+After completing the basic tutorial, your OpenClaw already has basic memory functions:
+- Layered memory structure (`MEMORY.md` + `memory/*.md`)
+- Semantic retrieval function (`memorySearch`)
+
+However, in actual use, you may encounter the following problems:
+
+**Problem 1: AI "Amnesia" After Long Conversations**
+When the conversation exceeds the context window limit, OpenClaw automatically compresses older parts of the conversation. This process can lead to the loss of important information.
+
+**Problem 2: Low Retrieval Hit Rate**
+Inconsistent log formats, lack of tags, low information density make it difficult for `memorySearch` to find relevant content.
+
+**Problem 3: Lack of Memory File Maintenance**
+Over time, outdated information accumulates, increasing noise and affecting retrieval quality.
+
+This chapter will address these issues one by one.
+
+### Enable the `memoryFlush` Feature
+
+**Problem Scenario:**
+You had a long, in-depth discussion with the AI and made important decisions. Suddenly, you notice the AI's responses start becoming "forgetful," as if it doesn't remember the previously discussed content.
+
+**Cause Analysis:**
+Each AI model has a context window limit (e.g., Claude is 200K tokens). When the conversation approaches this limit, OpenClaw triggers automatic **compaction**, summarizing older conversations to free up space. This summarization process might lose detailed information.
+
+**Solution:**
+Enable the `memoryFlush` feature. This function prompts the AI to write important information to files *before* compaction is triggered, and then performs the compaction.
+
+**Workflow:**
+1. OpenClaw detects the context is about to reach its limit
+2. It triggers `memoryFlush`, prompting the AI to save important information
+3. The AI writes key content to the `memory/` directory
+4. Compaction is executed, cleaning up old conversation history
+5. Important information is persisted and not lost
+
+**Configuration Method:**
+Edit `openclaw.json` and add the following configuration:
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000
+        }
+      }
+    }
+  }
+}
+```
+
+**Parameter Explanation:**
+- `reserveTokensFloor`: The minimum number of tokens to keep after compaction (20000)
+- `memoryFlush.enabled`: Turns the feature on/off
+- `memoryFlush.softThresholdTokens`: The threshold (in tokens remaining) that triggers the flush
+
+**About `softThresholdTokens`:**
+Setting this value to 4000 means: trigger `memoryFlush` when the remaining space is less than 4000 tokens.
+- Too small (e.g., 1000): The AI might not have enough space to write detailed information.
+- Too large (e.g., 10000): Would trigger frequently, impacting performance.
+- 4000 is a balanced value found through testing.
+
+**Effectiveness Verification:**
+After enabling, even during long conversations, the AI can maintain memory of previously discussed content because key information is persisted to files.
+
+**Note:** `memoryFlush` executes silently and does not interrupt the conversation. To check for triggers, you can enable `verbose` mode (send the `/verbose` command) and look for prompts like `Auto-compaction complete`.
+
+### Optimize Log Format to Improve Retrieval Accuracy
+
+`memorySearch` uses vector semantic retrieval technology, converting both search terms and log content into vectors and then calculating similarity.
+
+**Key Factors for Improving Retrieval Accuracy:**
+- **Use Tags:** Tags (e.g., `#deploy` `#nginx`) significantly improve recall rates.
+- **Structured Format:** A fixed format concentrates key information, making it easier to match.
+- **Single Topic:** One log entry should cover only one thing, avoiding information mixing.
+
+**Actual Effect Comparison:**
+Assume the search term is: "nginx deployment configuration"
+
+**Ineffective Log (Low Hit Rate):**
+```markdown
+Today's work: In the morning, I dealt with database backup issues. At noon, I deployed a new version of the application. In the afternoon, I modified the nginx configuration. In the evening, I wrote some documentation. For nginx, I changed the reverse proxy configuration, don't remember the specifics, but it finally ran.
+```
+**Problems:**
+- Contains multiple unrelated topics, diluting vector similarity
+- Lacks structured information, key points are not prominent
+- No tags, making precise matching difficult
+
+**Effective Log (High Hit Rate):**
+```markdown
+### [Project: WebApp] Nginx Reverse Proxy Configuration
+- **Result**: Successfully configured Nginx reverse proxy, application accessible via port 443
+- **Related Files**: `/etc/nginx/sites-available/webapp.conf`
+- **Lessons Learned**: `upstream` must use 127.0.0.1 instead of `localhost` (to avoid IPv6 issues)
+- **Tags**: #nginx #deploy #webapp #reverse-proxy
+```
+**Advantages:**
+- Title, result, and tags all contain the search keywords
+- Structured format provides high information density
+- Single topic, vector representation is more accurate
+
+### Configure Automatic Memory Maintenance
+
+**Problem:**
+As usage time increases, log files accumulate. Some information becomes outdated (e.g., temporary debugging records, completed one-off tasks). This "noise" interferes with the retrieval results of `memorySearch`.
+
+**Solution:**
+Configure periodic automatic maintenance tasks, letting the AI organize the memory itself.
+
+**Implementation Method:**
+Add a maintenance task to `workspace/HEARTBEAT.md`:
+```markdown
+## Memory Maintenance Tasks (Execute Weekly)
+Check the `lastMemoryMaintenance` field in `memory/heartbeat-state.json`. If it's more than 7 days ago, execute the following maintenance process:
+1. Read the log files from the last 7 days: `memory/YYYY-MM-DD.md`
+2. Extract information with long-term value and archive it to corresponding files:
+   - Project decisions and status → `memory/projects.md`
+   - Problem solutions → `memory/lessons.md`
+3. Compress detailed records of completed one-off tasks into a single-line summary
+4. Delete completely outdated temporary information
+5. Update `lastMemoryMaintenance` in `heartbeat-state.json` to the current date
+```
+
+Create the state tracking file `workspace/memory/heartbeat-state.json`:
+```json
+{
+  "lastMemoryMaintenance": "2026-02-26"
+}
+```
+
+**Maintenance Operation Explanation:**
+- **Extract:** Move information with long-term value from logs to the corresponding layered file.
+  *Example:* A technical decision recorded in the log should be extracted to `projects.md`.
+- **Compress:** Condense detailed records of completed tasks into short conclusions.
+  *Example:*
+    - Before compression: Detailed steps (10 steps) of a deployment process
+    - After compression: `2026-02-17: Completed production deployment for WebApp using Nginx + Docker solution`
+- **Clean:** Delete completely outdated temporary information.
+  *Examples:*
+    - "Need to attend a meeting tomorrow" → Meeting passed, can be deleted
+    - "Temporary configuration during testing" → Test completed, can be deleted
+
+### Configure Embedding Model
+
+`memorySearch` relies on an embedding model to convert text into vectors. Choosing the right model can improve retrieval quality and reduce costs.
+
+**Recommended Configuration:**
+```json
+{
+  "memorySearch": {
+    "enabled": true,
+    "provider": "openai",
+    "remote": {
+      "baseUrl": "https://api.siliconflow.cn/v1",
+      "apiKey": "YOUR_SiliconFlow_API_Key"
+    },
+    "model": "BAAI/bge-m3"
+  }
+}
+```
+
+**Why Choose `bge-m3`:**
+- **Cost:** SiliconFlow offers free quotas, sufficient for personal use.
+- **Multilingual:** Handles mixed Chinese and English text well.
+- **Performance:** Vector dimension of 1024, balancing precision and speed.
+
+**Get a SiliconFlow API Key:**
+1. Visit [siliconflow.cn](https://siliconflow.cn) and register an account
+2. Go to the console and create an API Key
+3. Free quota: Millions of tokens daily, more than enough for personal use.
+
+**`memorySearch` Workflow:**
+1. User asks: "How did we solve the nginx configuration issue last time?"
+2. AI calls `memory_search("nginx configuration issue")`
+3. `memorySearch` returns the most relevant results (including file path and line number)
+4. AI calls `memory_get(path="memory/2026-02-18.md", from=47, lines=10)`
+5. AI reads the specific content and answers the user
+
+This two-step design is efficient: `search` handles "locating," `get` handles "reading," avoiding loading all memory files.
+
+📋 **Practice Task 2: Optimize the Memory System**
+
+**Task Goal:**
+- Enable the `memoryFlush` feature
+- Rewrite the last 3 logs according to the optimized format
+- Configure automatic maintenance tasks
+- Switch to the `bge-m3` embedding model
+
+**Verification Method:**
+- Conduct a long conversation (100+ turns) and observe if amnesia occurs
+- Use `memorySearch` to search for previously recorded content and check the hit rate
+- Wait for a week and check if automatic maintenance has been executed
+
+✅ **Completion Criteria:**
+- `memoryFlush` configuration enabled
+- Log format conforms to optimization standards
+- Automatic maintenance tasks configured
+- Embedding model successfully switched
+
+## Sub-Agent Application: Team Collaboration Mode
+
+### What is a Sub-Agent?
+
+In the basic configuration, OpenClaw works in a single-threaded manner: you propose a task, and the AI completes it from start to finish. However, for complex tasks, this mode is inefficient.
+
+**The Concept of Sub-Agents:**
+A sub-agent is an independent working process spawned by the main Agent, capable of executing different sub-tasks in parallel.
+
+**Analogy:**
+- **Single-Agent Mode:** You are the project manager, doing all the work yourself.
+- **Multi-Agent Mode:** You are the project manager, able to dispatch team members to work in parallel.
+
+### Applicable Scenarios
+
+**Scenario 1: Information Gathering Tasks**
+- **Task:** Gather feature comparisons for 5 competitors.
+- **Single Agent:** Visit 5 websites sequentially, takes 10 minutes.
+- **Multi-Agent:** Dispatch 5 sub-agents to gather information in parallel, takes 2 minutes.
+
+**Scenario 2: Data Processing Tasks**
+- **Task:** Analyze the content of 100 files.
+- **Single Agent:** Process one by one, takes a long time.
+- **Multi-Agent:** Assign to 10 sub-agents, each processing 10 files.
+
+**Scenario 3: Monitoring Tasks**
+- **Task:** Monitor the status of multiple services simultaneously.
+- **Single Agent:** Polling checks, slow response.
+- **Multi-Agent:** Assign one monitoring agent per service.
+
+### Configuring Sub-Agents
+
+**Basic Configuration:**
+Edit `openclaw.json`:
+```json
+{
+  "agents": {
+    "defaults": {
+      "subAgents": {
+        "enabled": true,
+        "maxConcurrent": 3,
+        "timeout": 300000
+      }
+    }
+  }
+}
+```
+
+**Parameter Explanation:**
+- `enabled`: Turns the sub-agent feature on/off.
+- `maxConcurrent`: Maximum number of sub-agents that can run simultaneously.
+- `timeout`: Maximum execution time for a sub-agent (in milliseconds).
+
+**About `maxConcurrent`:**
+This value should not be set too high:
+- Too small (e.g., 1): Cannot leverage parallel advantages.
+- Too large (e.g., 10): May trigger API rate limits and increase costs.
+- Recommended 3-5: Balances performance and cost.
+
+### Using Sub-Agents
+
+**Method 1: Automatic Dispatching**
+The AI automatically judges if a task is suitable for parallel processing.
+
+**Example Conversation:**
+```
+User: Help me gather the main features of these 5 websites: [list of websites]
+AI: I will dispatch 5 sub-agents to gather information in parallel...
+[Sub-Agent 1] Analyzing website A...
+[Sub-Agent 2] Analyzing website B...
+...
+All information has been collected, now organizing the summary...
+```
+
+**Method 2: Explicit Specification**
+You can also explicitly request the use of sub-agents:
+```
+User: Use sub-agents to process this task in parallel...
+```
+
+### Sub-Agent Best Practices
+
+1. **Reasonable Task Decomposition**
+   - **Good Decomposition:** Break "analyze 100 files" into 10 sub-tasks, each processing 10 files.
+   - **Bad Decomposition:** Break "write an article" into multiple sub-tasks (writing requires coherence, unsuitable for parallel processing).
+
+2. **Set Reasonable Timeouts**
+   Adjust the `timeout` based on task complexity:
+   - Simple queries: 60 seconds
+   - Data analysis: 5 minutes
+   - Complex processing: 10 minutes
+
+3. **Monitor Concurrency**
+   Use the `/status` command to see the number of currently running sub-agents and avoid overloading.
+
+4. **Cost Control**
+   Sub-agents increase API call counts. Monitor costs carefully.
+
+📋 **Practice Task 3: Sub-Agent实战**
+
+**Task Goal:**
+- Enable the sub-agent feature
+- Complete a parallel task (e.g., information gathering)
+- Observe the efficiency improvement
+
+**Practice Task:**
+Choose one of the following tasks to practice:
+- Gather pricing information for 5 competitors
+- Analyze keywords from 10 web pages
+- Check the online status of 5 services
+
+✅ **Completion Criteria:**
+- Sub-agent configuration enabled
+- Successfully completed at least one parallel task
+- Understand the applicable scenarios for sub-agents
+
+## Scheduled Tasks: Cron Automation Practices
+
+### Cron Task Overview
+
+Cron is OpenClaw's scheduled task feature, allowing the AI to automatically execute tasks at specified times without manual triggering.
+
+**Typical Application Scenarios:**
+- **Daily Briefing:** Send weather, schedule, news summary every morning.
+- **Regular Backup:** Automatically back up important files weekly.
+- **Monitoring Alerts:** Check service status hourly, notify on anomalies.
+- **Scheduled Reminders:** Remind to wrap up work at 6 PM on weekdays.
+
+### Creating Cron Tasks
+
+**Method 1: Create via Conversation**
+```
+User: Create a scheduled task to send a daily briefing every morning at 8 AM.
+AI: I will create the scheduled task for you...
+- Task Name: daily-briefing
+- Execution Time: Daily at 08:00
+- Task Content: Send weather, schedule, news summary
+Created successfully!
+```
+
+**Method 2: Manual Configuration**
+Edit `workspace/crons/daily-briefing.json`:
+```json
+{
+  "name": "daily-briefing",
+  "schedule": "0 8 * * *",
+  "timezone": "Asia/Shanghai",
+  "task": {
+    "type": "message",
+    "content": "Send today's briefing: weather, schedule, important news"
+  },
+  "enabled": true
+}
+```
+
+**Cron Expression Explanation:**
+Format: `Minute Hour Day Month DayOfWeek`
+
+**Common Examples:**
+| Expression | Description |
+|------------|-------------|
+| `0 8 * * *` | Daily at 8:00 AM |
+| `*/30 * * * *` | Every 30 minutes |
+| `0 9-17 * * 1-5` | Hourly from 9 AM to 5 PM on weekdays |
+| `0 0 * * 0` | Weekly on Sunday at midnight |
+| `0 0 1 * *` | Monthly on the 1st at midnight |
+
+**Online Tool:** [crontab.guru](https://crontab.guru) can help you generate and validate cron expressions.
+
+### Cron Task Examples
+
+**Example 1: Daily Morning Briefing**
+```json
+{
+  "name": "morning-briefing",
+  "schedule": "0 8 * * *",
+  "timezone": "Asia/Shanghai",
+  "task": {
+    "type": "message",
+    "content": "Good morning! Today's briefing:\n1. Check weather\n2. Read today's schedule\n3. Summarize yesterday's work log\n4. Remind today's to-dos"
+  },
+  "enabled": true
+}
+```
+
+**Example 2: Weekday Evening Reminder**
+```json
+{
+  "name": "evening-reminder",
+  "schedule": "0 18 * * 1-5",
+  "timezone": "Asia/Shanghai",
+  "task": {
+    "type": "message",
+    "content": "End of workday reminder:\n1. Summarize completed tasks for today\n2. Record unfinished items\n3. Plan tomorrow's work"
+  },
+  "enabled": true
+}
+```
+
+**Example 3: Weekly Summary**
+```json
+{
+  "name": "weekly-summary",
+  "schedule": "0 17 * * 5",
+  "timezone": "Asia/Shanghai",
+  "task": {
+    "type": "message",
+    "content": "Friday evening summary:\n1. Review this week's work logs\n2. Count completed tasks\n3. Organize next week's plan"
+  },
+  "enabled": true
+}
+```
+
+**Example 4: Service Monitoring**
+```json
+{
+  "name": "service-monitor",
+  "schedule": "*/30 * * * *",
+  "timezone": "Asia/Shanghai",
+  "task": {
+    "type": "check",
+    "content": "Check the status of the following services:\n1. Is the website accessible?\n2. API response time\n3. Database connection\nNotify immediately if any anomalies are found."
+  },
+  "enabled": true
+}
+```
+
+### Managing Cron Tasks
+
+**List all tasks:**
+```bash
+openclaw cron list
+```
+
+**Enable/Disable a task:**
+```bash
+openclaw cron enable daily-briefing
+openclaw cron disable daily-briefing
+```
+
+**Delete a task:**
+```bash
+openclaw cron remove daily-briefing
+```
+
+**Manually trigger a task (for testing):**
+```bash
+openclaw cron run daily-briefing
+```
+
+### Cron Task Best Practices
+
+1. **Set Reasonable Frequencies**
+   - Don't execute too frequently (e.g., every minute), which increases costs.
+   - Set based on actual needs (monitoring can be 5-10 minutes; briefings are fine once daily).
+
+2. **Set the Timezone**
+   Ensure the `timezone` field is correctly set, otherwise tasks might execute at the wrong time.
+
+3. **Make Task Content Specific**
+   Don't write "send briefing". Write "send briefing: weather, schedule, news" so the AI knows exactly what to do.
+
+4. **Test Before Enabling**
+   After creating a task, use `openclaw cron run` to manually trigger it for testing. Confirm it works correctly before enabling automatic execution.
+
+5. **Monitor Execution Logs**
+   Periodically check `workspace/logs/cron.log` to ensure tasks are executing normally.
+
+📋 **Practice Task 4: Create Scheduled Tasks**
+
+**Task Goal:**
+- Create at least 2 Cron tasks
+- Test if the tasks execute normally
+- Observe the automation effect for a week
+
+**Recommended Tasks:**
+- Daily Morning Briefing (8 AM)
+- Weekday Evening Reminder (6 PM)
+- Weekly Summary (Friday afternoon)
+
+✅ **Completion Criteria:**
+- Successfully created at least 2 Cron tasks
+- Manual trigger test passed
+- Tasks are enabled and executing automatically
+
+## Skill Development: Expanding AI Capabilities
+
+### Skill System Overview
+
+Skills are OpenClaw's capability extension mechanism, similar to plugins or apps. Each Skill defines a set of specific tasks and workflows.
+
+**The Role of Skills:**
+- Encapsulate complex workflows
+- Define task templates for professional domains
+- Provide reusable capability modules
+
+**Skill Types:**
+- **Official Skills:** Standard Skills maintained by the OpenClaw team.
+- **Community Skills:** Third-party Skills shared by users.
+- **Custom Skills:** Skills you develop yourself.
+
+### Skill File Structure
+
+A standard Skill contains the following files:
+```
+workspace/skills/my-skill/
+├── SKILL.md          # Skill documentation
+├── config.json       # Configuration file
+└── templates/        # Template files (optional)
+```
+
+### Creating a Simple Skill
+
+**Example: Weather Query Skill**
+
+Create file `workspace/skills/weather-check/SKILL.md`:
+```markdown
+# Weather Query Skill
+
+## Description
+Query weather information for a specified city and format the output.
+
+## Usage
+User: Check weather in Beijing
+AI Execution Flow:
+1. Call weather API to get data
+2. Extract key information: temperature, conditions, air quality
+3. Format output
+
+## Output Format
+📍 Beijing Weather
+🌡️ Temperature: 15°C
+☁️ Conditions: Cloudy
+💨 Wind: 3级
+🌫️ Air Quality: Good
+
+## Configuration Requirements
+Requires a Weather API Key:
+- Provider: OpenWeatherMap
+- Configuration Path: `config.json`
+```
+
+Create configuration file `workspace/skills/weather-check/config.json`:
+```json
+{
+  "name": "weather-check",
+  "version": "1.0.0",
+  "description": "Query weather information for a city",
+  "author": "Your Name",
+  "config": {
+    "apiKey": "YOUR_API_Key",
+    "apiUrl": "https://api.openweathermap.org/data/2.5/weather",
+    "defaultCity": "Beijing"
+  }
+}
+```
+
+### Installing and Using a Skill
+
+**Install Skill:**
+```bash
+openclaw skill install ./workspace/skills/weather-check
+```
+
+**Use Skill:**
+```
+User: Use the weather query skill to check the weather in Shanghai
+AI: Calling weather query skill...
+📍 Shanghai Weather
+🌡️ Temperature: 18°C
+☁️ Conditions: Sunny
+💨 Wind: 2级
+🌫️ Air Quality: Good
+```
+
+### Advanced Skill Example
+
+**Example: Task Manager Skill**
+
+Create `workspace/skills/task-manager/SKILL.md`:
+```markdown
+# Task Manager Skill
+
+## Functions
+- Add a task
+- View task list
+- Mark task as complete
+- Delete a task
+
+## Data Storage
+Tasks are stored in `workspace/data/tasks.json`
+
+## Command Format
+- Add task: `Add task: [task description]`
+- View tasks: `View tasks` or `Task list`
+- Complete task: `Complete task: [task ID]`
+- Delete task: `Delete task: [task ID]`
+
+## Workflow
+
+### Adding a Task
+1. Parse task description
+2. Generate a unique ID
+3. Add to `tasks.json`
+4. Confirm successful addition
+
+### Viewing Tasks
+1. Read `tasks.json`
+2. Categorize by status (pending/completed)
+3. Format output
+
+### Completing a Task
+1. Find the task by ID
+2. Update status to "completed"
+3. Record completion time
+4. Save and confirm
+```
+
+### Skill Development Best Practices
+
+1. **Clear Documentation**
+   `SKILL.md` should include:
+   - Function description
+   - Usage instructions
+   - Configuration requirements
+   - Example output
+
+2. **Reasonable Configuration**
+   Place variable parameters in `config.json` for easy user customization.
+
+3. **Error Handling**
+   Consider exceptional situations:
+   - API call failures
+   - Missing configuration
+   - Incorrect data formats
+
+4. **Version Management**
+   Record the version number in `config.json` for easy updates and maintenance.
+
+5. **Testing and Validation**
+   Thoroughly test after development to ensure it works correctly under various scenarios.
+
+📋 **Practice Task 5: Develop a Custom Skill**
+
+**Task Goal:**
+- Develop a simple custom Skill
+- Install and test the Skill
+- Improve documentation and configuration
+
+**Recommended Projects:**
+Choose one of the following to develop:
+- **Countdown Skill:** Calculate how many days until a specific date.
+- **Note Skill:** Quickly record and query notes.
+- **Reminder Skill:** Set and manage reminders.
+- **Statistics Skill:** Count key data from work logs.
+
+✅ **Completion Criteria:**
+- Successfully created a custom Skill
+- Skill works correctly
+- Documentation is complete and clear
+
+## Multi-Platform Deployment: All-Access Integration Guide
+
+### Multi-Platform Access Overview
+
+OpenClaw supports simultaneous access to multiple messaging platforms, achieving the effect of "one AI, usable everywhere."
+
+**Supported Platforms:**
+- **Instant Messaging:** Telegram, Discord, Slack, WhatsApp
+- **Social Media:** Twitter, WeChat (via third-party bridges)
+- **Web Interface:** WebChat, HTTP API
+- **Local Interface:** CLI command line
+
+### Configuring Multi-Platform Access
+
+**Base Configuration File:** `openclaw.json`
+```json
+{
+  "gateways": {
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_Telegram_Bot_Token"
+    },
+    "discord": {
+      "enabled": true,
+      "token": "YOUR_Discord_Bot_Token",
+      "allowedChannels": ["channel-id-1", "channel-id-2"]
+    },
+    "webchat": {
+      "enabled": true,
+      "port": 3000,
+      "auth": {
+        "enabled": true,
+        "password": "YOUR_PASSWORD"
+      }
+    }
+  }
+}
+```
+
+### Telegram Access Configuration
+
+**Step 1: Create a Bot**
+- Search for `@BotFather` in Telegram
+- Send the `/newbot` command
+- Follow the prompts to set the Bot's name and username
+- Obtain the Bot Token
+
+**Step 2: Configure OpenClaw**
+```json
+{
+  "gateways": {
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_Bot_Token",
+      "allowedUsers": ["YOUR_Telegram_User_ID"]
+    }
+  }
+}
+```
+
+**Step 3: Start and Test**
+- Restart OpenClaw
+- Search for your bot in Telegram
+- Send `/start` to begin the conversation
+
+### Discord Access Configuration
+
+**Step 1: Create a Discord Application**
+- Visit the [Discord Developer Portal](https://discord.com/developers/applications)
+- Create a new application
+- On the Bot page, create a bot and get the Token
+- On the OAuth2 page, generate an invite link and add the bot to your server
+
+**Step 2: Configure OpenClaw**
+```json
+{
+  "gateways": {
+    "discord": {
+      "enabled": true,
+      "token": "YOUR_Discord_Bot_Token",
+      "allowedChannels": ["Channel_ID"],
+      "commandPrefix": "!"
+    }
+  }
+}
+```
+
+**Step 3: Test**
+Send `!help` in a Discord channel to test if the bot responds.
+
+### WebChat Access Configuration
+
+WebChat provides a browser-based interface, suitable for local use.
+
+**Configuration:**
+```json
+{
+  "gateways": {
+    "webchat": {
+      "enabled": true,
+      "port": 3000,
+      "host": "localhost",
+      "auth": {
+        "enabled": true,
+        "username": "admin",
+        "password": "YOUR_PASSWORD"
+      },
+      "https": {
+        "enabled": false
+      }
+    }
+  }
+}
+```
+
+**Access:**
+After starting, visit `http://localhost:3000` to use the web interface.
+
+### Message Routing Configuration
+
+When integrating with multiple platforms, you can configure message routing rules to send different types of messages to different platforms.
+
+**Example Configuration:**
+```json
+{
+  "routing": {
+    "rules": [
+      {
+        "type": "alert",
+        "destinations": ["telegram", "discord"]
+      },
+      {
+        "type": "daily-briefing",
+        "destinations": ["telegram"]
+      },
+      {
+        "type": "log",
+        "destinations": ["file"]
+      }
+    ]
+  }
+}
+```
+
+**Rule Explanation:**
+- Alert messages are sent to both Telegram and Discord.
+- Daily briefings are sent only to Telegram.
+- Log messages are only written to a file.
+
+### Multi-Platform Best Practices
+
+1. **Permission Isolation**
+   Set different permissions for different platforms:
+   - **Telegram (Personal):** Full permissions
+   - **Discord (Team):** Restrict sensitive operations
+   - **WebChat (Public):** Read-only permissions
+
+2. **Message Categorization**
+   Choose the appropriate platform based on message type:
+   - **Urgent Alerts** → Telegram (push notifications)
+   - **Daily Interaction** → Discord (team collaboration)
+   - **Data Queries** → WebChat (visual interface)
+
+3. **Cost Control**
+   Multiple platforms increase API calls; monitor costs carefully.
+
+📋 **Practice Task 6: Configure Multi-Platform Access**
+
+**Task Goal:**
+- Configure at least 2 messaging platforms
+- Test cross-platform message synchronization
+- Configure message routing rules
+
+**Recommended Configuration:**
+- Telegram (personal use)
+- Discord or WebChat (team/local use)
+
+✅ **Completion Criteria:**
+- Successfully configured at least 2 platforms
+- Able to converse with the AI on different platforms
+- Message routing rules are effective
+
+## Performance Tuning: Configuration Parameters Explained
+
+### Model Selection and Configuration
+
+Different tasks suit different models; choosing wisely balances performance and cost.
+
+**Recommended Configuration:**
+```json
+{
+  "agents": {
+    "defaults": {
+      "model": {
+        "provider": "anthropic",
+        "name": "claude-3-5-sonnet-20241022",
+        "temperature": 0.7,
+        "maxTokens": 4096
+      },
+      "fallback": {
+        "enabled": true,
+        "models": [
+          {
+            "provider": "openai",
+            "name": "gpt-4o"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+**Parameter Explanation:**
+- `model.provider`: The AI service provider (e.g., `anthropic`, `openai`).
+- `model.name`: The specific model name.
+- `model.temperature`: Controls randomness (0.0 = deterministic, 1.0 = very random).
+- `model.maxTokens`: Maximum tokens for the model's response.
+- `fallback`: Allows switching to alternative models if the primary is unavailable.
+
+**`temperature` Selection Suggestions:**
+- **0.3-0.5:** Code generation, data analysis (needs precision).
+- **0.7-0.8:** Daily conversation, content creation (balanced).
+- **0.9-1.0:** Creative writing, brainstorming (high creativity).
+
+### Token Usage Optimization
+
+Tokens are the primary source of API costs. Optimizing token usage can significantly reduce expenses.
+
+**Optimization Strategies:**
+
+1. **Enable Caching**
+   ```json
+   {
+     "agents": {
+       "defaults": {
+         "cache": {
+           "enabled": true,
+           "ttl": 3600,
+           "maxSize": 100
+         }
+       }
+     }
+   }
+   ```
+   Caching avoids repeated API calls, especially for identical or similar queries.
+
+2. **Compress System Prompts**
+   Condense lengthy system prompts into key points to reduce fixed costs per call.
+
+3. **Use Cheaper Models for Simple Tasks**
+   ```json
+   {
+     "agents": {
+       "simple-tasks": {
+         "model": {
+           "provider": "openai",
+           "name": "gpt-4o-mini"
+         }
+       }
+     }
+   }
+   ```
+
+4. **Limit Context Length**
+   ```json
+   {
+     "agents": {
+       "defaults": {
+         "compaction": {
+           "targetTokens": 50000
+         }
+       }
+     }
+   }
+   ```
+
+### Performance Monitoring
+
+**Enable Detailed Logging:**
+```json
+{
+  "logging": {
+    "level": "info",
+    "file": "workspace/logs/openclaw.log",
+    "metrics": {
+      "enabled": true,
+      "interval": 3600
+    }
+  }
+}
+```
+
+**View Usage Statistics:**
+```bash
+openclaw stats --period 7d
+```
+
+**Example Output:**
+```plaintext
+OpenClaw Usage Statistics (Last 7 Days)
+API Calls:
+- Total Count: 1,234
+- Total Tokens: 456,789
+- Estimated Cost: $12.34
+
+Model Distribution:
+- claude-3-5-sonnet: 80%
+- gpt-4o: 15%
+- gpt-4o-mini: 5%
+
+Task Types:
+- Conversation: 60%
+- File Operations: 25%
+- Web Search: 15%
+```
+
+### Cost Control
+
+**Set Daily Limits:**
+```json
+{
+  "billing": {
+    "limits": {
+      "daily": 10.00,
+      "monthly": 200.00
+    },
+    "alerts": {
+      "enabled": true,
+      "thresholds": [0.5, 0.8, 0.95]
+    }
+  }
+}
+```
+When usage reaches the thresholds (50%, 80%, 95% of the limit), the system sends an alert.
+
+### Configuration Cheat Sheet
+
+**Base Configuration:**
+```json
+{
+  "agents": {
+    "defaults": {
+      "model": {
+        "provider": "anthropic",
+        "name": "claude-3-5-sonnet-20241022",
+        "temperature": 0.7,
+        "maxTokens": 4096
+      },
+      "compaction": {
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000
+        }
+      },
+      "subAgents": {
+        "enabled": true,
+        "maxConcurrent": 3,
+        "timeout": 300000
+      },
+      "cache": {
+        "enabled": true,
+        "ttl": 3600
+      }
+    }
+  },
+  "memorySearch": {
+    "enabled": true,
+    "provider": "openai",
+    "remote": {
+      "baseUrl": "https://api.siliconflow.cn/v1",
+      "apiKey": "YOUR_API_Key"
+    },
+    "model": "BAAI/bge-m3"
+  },
+  "logging": {
+    "level": "info",
+    "metrics": {
+      "enabled": true
+    }
+  },
+  "billing": {
+    "limits": {
+      "daily": 10.00,
+      "monthly": 200.00
+    }
+  }
+}
+```
+
+📋 **Practice Task 7: Performance Optimization**
+
+**Task Goal:**
+- Optimize the configuration based on your usage patterns
+- Enable performance monitoring
+- Set up cost control
+- Observe the optimization effect for a week
+
+**Optimization Checklist:**
+- Adjust `temperature` parameter
+- Enable caching
+- Configure fallback models
+- Set daily limits
+- Enable usage statistics
+
+✅ **Completion Criteria:**
+- Configuration optimized
+- Cost control set up
+- Able to view usage statistics
+
+## Hands-on Practice Checklist
+
+### Basic Configuration (Required)
+
+- [ ] **Task 1:** Create `AGENTS.md` work specifications
+- [ ] **Task 2:** Optimize the memory system (`memoryFlush` + log format)
+- [ ] **Task 3:** Configure sub-agents and complete a parallel task
+- [ ] **Task 4:** Create at least 2 Cron scheduled tasks
+- [ ] **Task 5:** Develop a custom Skill
+- [ ] **Task 6:** Configure multi-platform access (at least 2 platforms)
+- [ ] **Task 7:** Performance optimization and cost control
+
+### Advanced Projects (Recommended)
+
+- [ ] **Project 1: Build an Automated Morning News System**
+  - Send weather, schedule, news summary every morning
+  - Integrate multiple data sources
+  - Format output
+
+- [ ] **Project 2: Email Auto-Classification System**
+  - Automatically read new emails
+  - Classify by importance
+  - Auto-reply to common questions
+
+- [ ] **Project 3: Multi-Platform Message Aggregator**
+  - Unified management of messages from different platforms
+  - Intelligent routing and forwarding
+  - Message archiving and search
+
+- [ ] **Project 4: Service Monitoring and Alerting System**
+  - Regularly check service status
+  - Automatically alert on anomalies
+  - Generate monitoring reports
+
+- [ ] **Project 5: Knowledge Base Management System**
+  - Automatically organize and archive notes
+  - Intelligent retrieval and recommendations
+  - Generate periodic summaries
+
+### Advanced Challenges (Optional)
+
+- [ ] **Challenge 1:** Develop a complex multi-step Skill
+- [ ] **Challenge 2:** Implement cross-platform workflow automation
+- [ ] **Challenge 3:** Build a personal data analysis dashboard
+- [ ] **Challenge 4:** Integrate third-party APIs and services
+- [ ] **Challenge 5:** Achieve extreme cost optimization (monthly cost < $10)
+
+## Troubleshooting
+
+**Q1: `memoryFlush` is not triggering. What should I do?**
+
+**Possible Reasons:**
+- Configuration not correctly enabled
+- Conversation length hasn't reached the threshold
+- Log level too low, can't see trigger messages
+
+**Solutions:**
+- Check if `memoryFlush.enabled` is `true` in `openclaw.json`
+- Enable verbose mode: send the `/verbose` command
+- Conduct a long conversation test (100+ turns) and observe if it triggers
+
+**Q2: Sub-agents are failing to execute.**
+
+**Possible Reasons:**
+- Concurrency exceeds API limits
+- Sub-task timed out
+- Unreasonable task decomposition
+
+**Solutions:**
+- Lower the `maxConcurrent` value
+- Increase the `timeout` value
+- Check if the task is suitable for parallel processing
+
+**Q3: Cron tasks are not executing.**
+
+**Possible Reasons:**
+- Incorrect Cron expression
+- Incorrect timezone setting
+- Task is disabled
+
+**Solutions:**
+- Verify the expression using [crontab.guru](https://crontab.guru)
+- Check the `timezone` field
+- Run `openclaw cron list` to see task status
+- Manually trigger for testing: `openclaw cron run task-name`
+
+**Q4: `memorySearch` can't find content.**
+
+**Possible Reasons:**
+- Embedding model not configured
+- Log format not standardized
+- Missing tags
+
+**Solutions:**
+- Check the `memorySearch` configuration
+- Rewrite logs according to the optimized format
+- Add relevant tags
+
+**Q5: Messages are not syncing across multiple platforms.**
+
+**Possible Reasons:**
+- Incorrect routing rules configuration
+- Connection failure on a specific platform
+- Inconsistent permission settings
+
+**Solutions:**
+- Check the `routing` configuration
+- Check the connection status of each platform
+- Standardize permission settings
+
+**Q6: API costs are too high.**
+
+**Solutions:**
+- Enable caching to reduce redundant calls
+- Use cheaper models for simple tasks
+- Optimize system prompts to reduce fixed costs
+- Set daily limits to prevent overspending
+- Regularly check usage statistics to identify high-consumption areas
+
+**Q7: Configuration file changes are not taking effect.**
+
+**Solutions:**
+- Restart OpenClaw: `openclaw restart`
+- Check if the JSON format is correct (use a JSON validator)
+- Check the log file for error messages
+
+## Advanced Learning Resources
+
+### Official Resources
+- **Official Website:** [openclaw.ai](https://openclaw.ai)
+- **GitHub Repository:** [github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
+- **Official Documentation:** [docs.openclaw.ai](https://docs.openclaw.ai)
+- **Skill Marketplace:** [github.com/VoltAgent/awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills)
+
+### Community Resources
+- **Reddit:** [r/clawdbot](https://reddit.com/r/clawdbot), [r/AiForSmallBusiness](https://reddit.com/r/AiForSmallBusiness)
+- **Discord:** Official OpenClaw Discord server
+- **GitHub Discussions:** Ask questions and communicate in the repository's Discussions section
+
+### Chinese Resources
+- **Chinese Community:** MaoTouHU/OpenClawChinese (Provides Chinese UI and documentation)
+- **Chinese Tutorials:** Search for "OpenClaw 中文教程" to find more localized resources
+
+### Advanced Topics
+
+After completing this tutorial, you can explore the following advanced topics:
+- **Multi-Agent Collaboration:** Have multiple agents work together synergistically.
+- **Custom Plugin Development:** Develop more complex functional extensions.
+- **Enterprise-Level Deployment:** Deploy OpenClaw within a team or company.
+- **Security Hardening:** In-depth configuration of security policies.
+- **Performance Tuning:** Optimization for large-scale usage.
+
+## Summary
+
+After completing this tutorial, your OpenClaw has progressed from being "usable" to "very usable," perhaps even "indispensable."
+
+**You have mastered:**
+✅ A complete work specification system (`AGENTS.md`)
+✅ A reliable memory management mechanism
+✅ Efficient parallel task processing
+✅ Precise scheduled automation
+✅ Autonomous capability expansion
+✅ All-platform access solutions
+✅ Optimized performance configuration
+
+**Next Steps:**
+- **Dive into Practice:** Choose a practical project and apply the learned knowledge to real-world scenarios.
+- **Continuously Optimize:** Adjust configurations based on your usage patterns.
+- **Join the Community:** Share your experiences and help other users.
+- **Explore and Innovate:** Try developing unique Skills and workflows.
+
+OpenClaw's potential extends far beyond this. As you gain a deeper understanding of the system, you will discover more possibilities.
+
+Wishing you a fruitful journey in exploring your AI assistant! 🚀
