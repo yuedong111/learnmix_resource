@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="../dist/app.css" rel="stylesheet" />
+    <title>Tailwind v4 Learning</title>
+
+    <!-- 防 FOUC：尽早决定要不要加 dark -->
+
+    <script>
+      document.documentElement.classList.toggle(
+        "dark",
+        localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches),
+      );
+    </script>
+  </head>
+
+  <body class="min-h-dvh bg-bg text-fg space-y-6">
+    <header class="sticky top-0 border-b border-border bg-bg/80 backdrop-blur">
+      <div
+        class="mx-auto max-w-5xl px-(--spacing-gutter) py-4 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div class="size-10 rounded-xl bg-primary"></div>
+          <div>
+            <div class="text-base font-semibold">Tailwind v4 Learning</div>
+            <div class="text-sm/6 opacity-70">
+              工程版：@theme + components + dark
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="btn" id="themeSystem">跟随系统</button>
+          <button class="btn" id="themeLight">浅色</button>
+          <button class="btn btn-primary" id="themeDark">深色</button>
+        </div>
+      </div>
+    </header>
+
+    <main
+      class="mx-auto max-w-5xl px-(--spacing-gutter) py-(--spacing-section)"
+    >
+      <!-- 小屏 1 列；md 起变成 240px + 1fr -->
+
+      <div class="grid gap-6 md:grid-cols-[320px_1fr]">
+        <aside class="card p-4 space-y-3">
+          <div class="card-header">
+            <div class="text-base font-semibold">Sidebar</div>
+            <span class="badge">240px</span>
+          </div>
+
+          <nav class="space-y-2">
+            <a class="btn w-full justify-start" href="#">Dashboard</a>
+            <a class="btn w-full justify-start" href="#">Projects</a>
+            <a class="btn w-full justify-start" href="#">Settings</a>
+          </nav>
+
+          <p class="text-xs/5 opacity-60">
+            说明: md 以上布局用的是
+            <span class="font-mono">grid-cols-[240px_1fr]</span>, 其中
+            <span class="font-mono">1fr</span> 表示“剩余空间的一份”。
+          </p>
+        </aside>
+
+        <!-- Content -->
+
+        <section class="space-y-6">
+          <section class="card p-6 space-y-4">
+            <div class="card-header">
+              <h2 class="text-lg font-semibold">第一个 Card ✅</h2>
+              <span class="badge">main</span>
+            </div>
+
+            <p class="text-sm/6">
+              你现在已经用上了：语义 token（bg-bg/text-fg/border-border）+
+              组件封装（.btn/.card/.input/.badge/.card-header）+ Grid 双栏布局。
+            </p>
+
+            <div class="flex gap-2">
+              <button class="btn">Cancel</button>
+              <button class="btn btn-primary">Save</button>
+            </div>
+
+            <input class="input" type="email" placeholder="name@example.com" />
+          </section>
+
+          <section class="card p-6 space-y-4">
+            <div class="card-header">
+              <h2 class="text-lg font-semibold">第二个 Card（练习区）</h2>
+              <span class="badge">todo</span>
+            </div>
+
+            <ul class="space-y-2 text-sm/6">
+              <li class="rounded-xl bg-muted p-3">
+                练习 1：把侧栏宽度改成 280px（改成 grid-cols-[280px_1fr]）
+              </li>
+
+              <li class="rounded-xl bg-muted p-3">
+                练习 2：让 Sidebar 的按钮 hover 更明显（只改 .btn）
+              </li>
+
+              <li class="rounded-xl bg-muted p-3">
+                练习 3：给第二个 Card 加一个右上角 “New” badge
+              </li>
+            </ul>
+          </section>
+
+          <section class="card p-6 space-y-4 @container">
+            <div class="card-header justify-between">
+              <h2 class="text-lg font-semibold">
+                容器查询卡片（@container + @md:）
+              </h2>
+              <span class="badge">@md</span>
+            </div>
+
+            <p class="text-sm/6 opacity-70">
+              这个卡片的布局不看 viewport 的 md/lg，而是看“卡片自己的宽度”。
+              你可以拖动窗口、或改变侧栏宽度，观察卡片内部列数变化。
+            </p>
+
+            <!-- 关键：@md: 是“容器宽度达到 md 阈值”才生效 -->
+
+            <div class="grid gap-3 @md:grid-cols-3">
+              <div class="rounded-xl bg-muted p-3">
+                <div class="font-medium">Panel A</div>
+
+                <div class="text-xs/5 opacity-70 mt-1">窄时是 1 列</div>
+              </div>
+
+              <div class="rounded-xl bg-muted p-3">
+                <div class="font-medium">Panel B</div>
+
+                <div class="text-xs/5 opacity-70 mt-1">达到 @md 变 3 列</div>
+              </div>
+
+              <div class="rounded-xl bg-muted p-3">
+                <div class="font-medium">Panel C</div>
+
+                <div class="text-xs/5 opacity-70 mt-1">只由容器宽度决定</div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <footer
+      class="mx-auto max-w-5xl px-(--spacing-gutter) py-10 text-center text-xs/5 opacity-60"
+    >
+      Footer 和 main 同级（语义更正确）
+    </footer>
+
+    <script>
+      const applyTheme = () => {
+        document.documentElement.classList.toggle(
+          "dark",
+          localStorage.theme === "dark" ||
+            (!("theme" in localStorage) &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches),
+        );
+      };
+
+      document.getElementById("themeLight").onclick = () => {
+        localStorage.theme = "light";
+        applyTheme();
+      };
+      document.getElementById("themeDark").onclick = () => {
+        localStorage.theme = "dark";
+        applyTheme();
+      };
+      document.getElementById("themeSystem").onclick = () => {
+        localStorage.removeItem("theme");
+        applyTheme();
+      };
+    </script>
+  </body>
+</html>

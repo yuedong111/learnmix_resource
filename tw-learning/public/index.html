@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="../dist/app.css" rel="stylesheet" />
+    <title>Tailwind v4 Learning</title>
+
+    <!-- 防 FOUC：尽早决定要不要加 dark -->
+
+    <script>
+      document.documentElement.classList.toggle(
+        "dark",
+        localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches),
+      );
+    </script>
+  </head>
+
+  <body class="min-h-dvh bg-bg text-fg space-y-6">
+    <header class="sticky top-0 border-b border-border bg-bg/80 backdrop-blur">
+      <div
+        class="mx-auto max-w-5xl px-(--spacing-gutter) py-4 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div class="size-10 rounded-xl bg-primary"></div>
+          <div>
+            <div class="text-base font-semibold">Tailwind v4 Learning</div>
+            <div class="text-sm/6 opacity-70">
+              工程版：@theme + components + dark
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="btn" id="themeSystem">跟随系统</button>
+          <button class="btn" id="themeLight">浅色</button>
+          <button class="btn btn-primary" id="themeDark">深色</button>
+        </div>
+      </div>
+    </header>
+
+    <main
+      class="mx-auto max-w-5xl px-(--spacing-gutter) py-(--spacing-section)"
+    >
+      <!-- 小屏 1 列；md 起变成 240px + 1fr -->
+
+      <div class="grid gap-6 md:grid-cols-[320px_1fr]">
+        <aside class="card p-4 space-y-3">
+          <div class="card-header">
+            <div class="text-base font-semibold">Sidebar</div>
+            <span class="badge">240px</span>
+          </div>
+
+          <nav class="space-y-2">
+            <a class="btn w-full justify-start" href="#">Dashboard</a>
+            <a class="btn w-full justify-start" href="#">Projects</a>
+            <a class="btn w-full justify-start" href="#">Settings</a>
+          </nav>
+
+          <p class="text-xs/5 opacity-60">
+            说明: md 以上布局用的是
+            <span class="font-mono">grid-cols-[240px_1fr]</span>, 其中
+            <span class="font-mono">1fr</span> 表示“剩余空间的一份”。
+          </p>
+        </aside>
+
+        <!-- Content -->
+
+        <section class="space-y-6">
+          <!-- Page Header -->
+
+          <section class="card p-6 space-y-4">
+            <div class="card-header">
+              <div>
+                <h2 class="text-lg font-semibold">Projects</h2>
+
+                <p class="text-sm/6 opacity-70">
+                  一个真实列表页：搜索 / 过滤 / 卡片列表
+                </p>
+              </div>
+              <button class="btn btn-primary">New Project</button>
+            </div>
+
+            <!-- Search + Filters -->
+
+            <div class="grid gap-3 md:grid-cols-[1fr_auto]">
+              <!-- peer：输入校验（email 只是为了演示 invalid，更容易触发） -->
+
+              <div class="space-y-2">
+                <input
+                  class="input peer"
+                  type="email"
+                  placeholder="Search (输入一个 email 试试校验)"
+                />
+
+                <p class="hidden text-xs/5 text-red-500/80 peer-invalid:block">
+                  输入不符合 email 格式（peer-invalid:block）
+                </p>
+              </div>
+
+              <!-- Filters：用 data-state 演示状态驱动 -->
+
+              <div class="flex gap-2">
+                <button class="badge" data-state="off" id="filterActive">
+                  Active
+                </button>
+
+                <button class="badge" data-state="off" id="filterArchived">
+                  Archived
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Cards List -->
+
+          <section class="space-y-3">
+            <!-- Item 1 (group: 父 hover 子变化) -->
+
+            <article class="group card list-item">
+              <div class="card-header">
+                <!-- min-w-0：让整个"标题区"可以收缩，为右侧按钮腾出空间 -->
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <h3 class="truncate text-base font-semibold">
+                      Apollo Migration
+                    </h3>
+                    <span class="badge">Active</span>
+                  </div>
+
+                  <p class="text-sm/6 opacity-70 mt-1">
+                    用 group-hover 让右侧按钮只在 hover
+                    时显现，模拟真实产品列表交互。
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button
+                    class="btn list-item-quick peer flex-shrink-0"
+                    aria-expanded="false"
+                    type="button"
+                  >
+                    Quick View
+                  </button>
+                  <button class="btn btn-primary">Open</button>
+
+                  <div class="list-item-details w-full">
+                    <div class="card-header">
+                      <div class="font-medium">Quick View</div>
+                      <span class="badge">aria + peer</span>
+                    </div>
+                    <p class="mt-2 opacity-70">
+                      这块内容的显示由
+                      <span class="font-mono">peer-aria-expanded:block</span>
+                      控制。 JS 只切换按钮的 aria-expanded。
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 grid gap-3 @container">
+                <div class="grid gap-3 @md:grid-cols-3">
+                  <div class="rounded-xl bg-bg border border-border p-3">
+                    <div class="text-xs/5 opacity-70">Owner</div>
+
+                    <div class="text-sm/6 font-medium mt-1">You</div>
+                  </div>
+
+                  <div class="rounded-xl bg-bg border border-border p-3">
+                    <div class="text-xs/5 opacity-70">Updated</div>
+
+                    <div class="text-sm/6 font-medium mt-1">Today</div>
+                  </div>
+
+                  <div class="rounded-xl bg-bg border border-border p-3">
+                    <div class="text-xs/5 opacity-70">Status</div>
+
+                    <div class="text-sm/6 font-medium mt-1">On track</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Item 2 -->
+
+            <article class="group card list-item">
+              <div class="card-header">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <h3 class="truncate text-base font-semibold">
+                      Design Token Rollout
+                    </h3>
+                    <span class="badge" data-state="active">Active</span>
+                  </div>
+
+                  <p class="text-sm/6 opacity-70 mt-1">
+                    练习：把 “Active” badge 改成用 data
+                    变体驱动（下一步我们会做）。
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <button
+                    class="btn list-item-quick peer"
+                    aria-expanded="false"
+                    type="button"
+                  >
+                    Quick View
+                  </button>
+                  <button class="btn btn-primary">Open</button>
+
+                  <div class="list-item-details w-full">
+                    <div class="card-header">
+                      <div class="font-medium">Quick View</div>
+                      <span class="badge">aria + peer</span>
+                    </div>
+                    <p class="mt-2 opacity-70">
+                      这块内容的显示由
+                      <span class="font-mono">peer-aria-expanded:block</span>
+                      控制。 JS 只切换按钮的 aria-expanded。
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="list-item-details">
+                <div class="card-header">
+                  <div class="font-medium">Quick View</div>
+                  <span class="badge">aria + peer</span>
+                </div>
+                <p class="mt-2 opacity-70">
+                  这块内容的显示由
+                  <span class="font-mono">peer-aria-expanded:block</span> 控制。
+                  JS 只切换按钮的 aria-expanded。
+                </p>
+              </div>
+
+              <div class="mt-4 grid gap-3">
+                <div class="rounded-xl bg-bg border border-border p-3">
+                  <div class="text-xs/5 opacity-70">Note</div>
+
+                  <div class="text-sm/6 mt-1">
+                    这里先用 bg-bg + border-border，让卡片内卡片仍然跟随主题。
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Item 3 -->
+
+            <article class="group card list-item">
+              <div class="card-header">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <h3 class="truncate text-base font-semibold">
+                      Legacy Cleanup
+                    </h3>
+                    <span class="badge">Archived</span>
+                  </div>
+
+                  <p class="text-sm/6 opacity-70 mt-1">
+                    练习：让 Archived 的 badge 颜色更“弱”（下一步我们用语义
+                    token 做）。
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button
+                    class="btn list-item-quick peer"
+                    aria-expanded="false"
+                    type="button"
+                  >
+                    Quick View
+                  </button>
+                  <button class="btn">Open</button>
+                </div>
+              </div>
+
+              <div class="list-item-details">
+                <div class="card-header">
+                  <div class="font-medium">Quick View</div>
+                  <span class="badge">aria + peer</span>
+                </div>
+                <p class="mt-2 opacity-70">
+                  这块内容的显示由
+                  <span class="font-mono">peer-aria-expanded:block</span> 控制。
+                  JS 只切换按钮的 aria-expanded。
+                </p>
+              </div>
+            </article>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <footer
+      class="mx-auto max-w-5xl px-(--spacing-gutter) py-10 text-center text-xs/5 opacity-60"
+    >
+      Footer 和 main 同级（语义更正确）
+    </footer>
+
+    <script>
+      const applyTheme = () => {
+        document.documentElement.classList.toggle(
+          "dark",
+          localStorage.theme === "dark" ||
+            (!("theme" in localStorage) &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches),
+        );
+      };
+
+      document.getElementById("themeLight").onclick = () => {
+        localStorage.theme = "light";
+        applyTheme();
+      };
+      document.getElementById("themeDark").onclick = () => {
+        localStorage.theme = "dark";
+        applyTheme();
+      };
+      document.getElementById("themeSystem").onclick = () => {
+        localStorage.removeItem("theme");
+        applyTheme();
+      };
+      const toggleState = (btn) => {
+        const on = btn.getAttribute("data-state") === "on";
+        btn.setAttribute("data-state", on ? "off" : "on");
+        // btn.classList.toggle("btn-primary", !on);
+      };
+      document.getElementById("filterActive").onclick = (e) =>
+        toggleState(e.currentTarget);
+      document.getElementById("filterArchived").onclick = (e) =>
+        toggleState(e.currentTarget);
+
+      // Quick View：只切换 aria-expanded，CSS 会自动处理样式和显示
+      document.querySelectorAll(".list-item-quick").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const expanded = btn.getAttribute("aria-expanded") === "true";
+          btn.setAttribute("aria-expanded", expanded ? "false" : "true");
+          btn.parentElement.classList.toggle("flex-wrap", !expanded);
+          btn.parentElement.classList.toggle("justify-end", !expanded);
+        });
+      });
+    </script>
+  </body>
+</html>

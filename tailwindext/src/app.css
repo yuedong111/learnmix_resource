@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* base variables（纯 CSS，做语义的 source-of-truth） */
+:root {
+    --app-bg: oklch(0.99 0 0);
+    --app-fg: oklch(0.2 0 0);
+    --app-border: oklch(0.9 0 0);
+    --app-primary: oklch(0.62 0.18 32);
+    --app-primary-fg: oklch(0.98 0 0);
+    --app-muted: oklch(0.96 0 0);
+}
+
+.dark {
+    --app-bg: oklch(0.18 0 0);
+    --app-fg: oklch(0.95 0 0);
+    --app-border: oklch(0.32 0 0);
+    --app-primary: oklch(0.7 0.16 220);
+    --app-primary-fg: oklch(0.14 0 0);
+    --app-muted: oklch(0.24 0 0);
+}
+
+/* 把语义变量映射到 Tailwind token（引用其它变量时用 inline） */
+@theme inline {
+    --color-bg: var(--app-bg);
+    --color-fg: var(--app-fg);
+    --color-border: var(--app-border);
+    --color-primary: var(--app-primary);
+    --color-primary-fg: var(--app-primary-fg);
+    --color-muted: var(--app-muted);
+    --color-mint-500: var(--app-primary);
+    --color-mint-700: oklch(1 1 280);
+
+    --spacing-gutter: 8;
+    --spacing-section: 16;
+}
+
+/* 组件层：@apply + @layer components */
+@layer components {
+    .btn {
+        @apply  inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm/6 font-medium 
+        border border-border bg-bg text-fg 
+        not-disabled:hover:bg-muted 
+        active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary 
+        disabled:opacity-50 disabled:pointer-events-none transition;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-primary-fg border-transparent hover:opacity-90;
+    }
+
+    .card {
+        @apply rounded-2xl border border-border bg-bg text-fg shadow-sm;
+    }
+
+    .input {
+        @apply w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm/6 placeholder:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary invalid:border-red-500/50;
+    }
+
+    .badge {
+        @apply inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs/5;
+    }
+
+    .card-header {
+        @apply flex items-center;
+    }
+}

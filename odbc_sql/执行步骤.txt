@@ -1,0 +1,9 @@
+1. 将current all script解压，解压路径给下面的src， dst是过滤处理后的sql存放路径
+2. python .\group_sql.py --src="C:/Users/pengchencq/test/current all script/current script" --dst="out"    
+
+run_sql.py中：
+SQL_ROOT = r"out"  #这里和上面的dst路径一致
+
+
+
+3. python run_sql.py > tt.log  

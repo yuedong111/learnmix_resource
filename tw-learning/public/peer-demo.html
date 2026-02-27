@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tailwind Peer 选择器综合示例</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* 示例样式 */
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-50 p-8">
+    <div class="mx-auto max-w-xl space-y-8">
+      <!-- 标题 -->
+      <header>
+        <h1 class="text-2xl font-bold text-gray-900">Peer 选择器综合示例</h1>
+        <p class="mt-2 text-sm text-gray-600">
+          三个场景使用
+          <code class="bg-gray-200 px-1 rounded">peer/{name}</code> 命名区分
+        </p>
+      </header>
+
+      <!-- 场景 1: 错误提示 -->
+      <section class="space-y-4 rounded-xl bg-white p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800">
+          1️⃣ 错误提示（email 校验）
+        </h2>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >邮箱地址</label
+          >
+
+          <!-- peer/email: 输入框 -->
+          <input
+            class="peer/email w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 peer-invalid/email:border-red-500 peer-invalid/email:focus:ring-red-500/20"
+            type="email"
+            placeholder="请输入邮箱"
+            required
+          />
+
+          <!-- peer-invalid/email:block: 错误提示 -->
+          <p class="hidden text-sm text-red-500 peer-invalid/email:block">
+            ⚠️ 请输入有效的邮箱地址
+          </p>
+
+          <!-- peer-valid/email:block: 成功提示 -->
+          <p class="hidden text-sm text-green-600 peer-valid/email:block">
+            ✅ 邮箱格式正确
+          </p>
+        </div>
+
+        <p class="text-xs text-gray-500">
+          试试输入：abc（无效） vs test@example.com（有效）
+        </p>
+      </section>
+
+      <!-- 场景 2: 密码显示/隐藏 -->
+      <section class="space-y-4 rounded-xl bg-white p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800">
+          2️⃣ 密码显示/隐藏按钮
+        </h2>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">密码</label>
+
+          <div class="relative">
+            <!-- peer/password: 密码输入框 -->
+            <input
+              class="peer/password w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              type="password"
+              placeholder="请输入密码"
+            />
+
+            <!-- peer-focus/password:opacity-100: 聚焦时显示眼睛按钮 -->
+            <button
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 opacity-0 transition-opacity peer-focus/password:opacity-100 hover:text-gray-600"
+              onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'"
+            >
+              <!-- 👁️ 眼睛图标 -->
+              <svg
+                class="size-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500">点击输入框，右侧眼睛按钮会淡入显示</p>
+      </section>
+
+      <!-- 场景 3: 输入框标签浮动效果 -->
+      <section class="space-y-4 rounded-xl bg-white p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800">3️⃣ 标签浮动效果</h2>
+
+        <div class="space-y-2">
+          <div class="relative">
+            <!-- peer/float: 输入框（占位符用空格实现） -->
+            <input
+              class="peer/float w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              type="text"
+              placeholder=" "
+              id="floating-label"
+            />
+
+            <!-- peer-placeholder-shown/float: 标签样式 -->
+            <label
+              for="floating-label"
+              class="absolute left-4 top-3 cursor-pointer bg-white px-1 text-sm text-gray-500 transition-all peer-placeholder-shown/float:top-3.5 peer-placeholder-shown/float:text-base peer-placeholder-shown/float:text-gray-400 peer-focus/float:-top-2.5 peer-focus/float:text-xs peer-focus/float:text-blue-600"
+            >
+              用户名
+            </label>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500">
+          点击输入框或输入内容时，标签会浮动到左上角
+        </p>
+      </section>
+
+      <!-- 代码说明 -->
+      <section class="rounded-xl bg-gray-900 p-6 text-gray-100">
+        <h2 class="mb-4 text-lg font-semibold">📝 关键代码说明</h2>
+
+        <div class="space-y-3 text-sm">
+          <div>
+            <span class="text-blue-400">peer/email</span>
+            <span class="text-gray-400"> → 邮箱输入框</span>
+          </div>
+          <div>
+            <span class="text-green-400">peer-invalid/email:block</span>
+            <span class="text-gray-400"> → 校验失败时显示错误</span>
+          </div>
+          <div>
+            <span class="text-yellow-400">peer/password</span>
+            <span class="text-gray-400"> → 密码输入框</span>
+          </div>
+          <div>
+            <span class="text-purple-400">peer-focus/password:opacity-100</span>
+            <span class="text-gray-400"> → 聚焦时显示按钮</span>
+          </div>
+          <div>
+            <span class="text-pink-400">peer/float</span>
+            <span class="text-gray-400"> → 浮动标签输入框</span>
+          </div>
+          <div>
+            <span class="text-orange-400"
+              >peer-placeholder-shown/float:top-3</span
+            >
+            <span class="text-gray-400"> → 占位符显示时标签位置</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
