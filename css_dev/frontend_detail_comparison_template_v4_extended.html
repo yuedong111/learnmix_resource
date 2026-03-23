@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>前端专业细节全模块对比模板 v4</title>
+  <style>
+    :root{
+      --bg:#f6f8fc;
+      --panel:rgba(255,255,255,.84);
+      --card:#fff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:rgba(15,23,42,.08);
+      --shadow-soft:0 12px 30px rgba(15,23,42,.06);
+      --shadow-pro:0 14px 32px rgba(15,23,42,.08), 0 2px 8px rgba(15,23,42,.04);
+      --shadow-bad:0 10px 24px rgba(0,0,0,.12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "SF Pro Display", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+      --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;padding:0;
+      background:
+        radial-gradient(1200px 500px at 20% -10%, rgba(14,165,233,.08), transparent 60%),
+        radial-gradient(1200px 500px at 90% -10%, rgba(99,102,241,.06), transparent 60%),
+        var(--bg);
+      color:var(--text); font-family:var(--sans); line-height:1.5;
+    }
+    .page{width:min(1480px, calc(100vw - 24px)); margin:20px auto 72px;}
+    .canvas{
+      border-left:1px solid var(--line); border-right:1px solid var(--line);
+      background:
+        linear-gradient(var(--line), var(--line)) top/100% 1px no-repeat,
+        linear-gradient(var(--line), var(--line)) bottom/100% 1px no-repeat;
+      padding:8px;
+    }
+    .hero{
+      display:grid; grid-template-columns:1.08fr .92fr; gap:24px; align-items:end;
+      padding:36px; background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.74));
+      border:1px solid var(--line); box-shadow:var(--shadow-soft); border-radius:32px;
+      backdrop-filter: blur(10px); margin-bottom:28px;
+    }
+    .eyebrow{
+      font:600 12px/1 var(--mono); letter-spacing:.18em; text-transform:uppercase;
+      color:#334155; margin:0 0 16px;
+    }
+    h1{margin:0; font-size:clamp(30px,4vw,52px); line-height:.98; letter-spacing:-.045em; font-weight:650;}
+    .hero p{margin:12px 0 0; color:var(--muted); max-width:60ch; font-size:15px;}
+    .actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-start;}
+    .btn{
+      appearance:none; border:none; background:#111827; color:#fff; padding:12px 18px;
+      border-radius:999px; font-weight:600; letter-spacing:-.01em; box-shadow:0 6px 18px rgba(15,23,42,.14);
+    }
+    .btn.secondary{
+      background:rgba(255,255,255,.82); color:var(--text); box-shadow:none;
+      border:1px solid rgba(15,23,42,.1); outline:1px solid rgba(255,255,255,.7); outline-offset:-2px;
+    }
+    .section{margin-top:28px; padding-top:8px; border-top:1px solid var(--line);}
+    .section-head{display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:16px; padding:0 8px;}
+    .section-head h2{margin:0; font-size:24px; letter-spacing:-.03em;}
+    .section-head p{margin:0; color:var(--muted); font-size:14px; max-width:78ch; text-align:right;}
+    .compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 8px;}
+    .panel{
+      background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:18px; min-height:360px;
+      box-shadow:var(--shadow-soft); position:relative; overflow:hidden; backdrop-filter: blur(10px);
+    }
+    .label{display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#0f172ab8; margin-bottom:14px;}
+    .dot{width:8px;height:8px;border-radius:999px;background:#94a3b8}.dot.bad{background:#f97316}.dot.good{background:#22c55e}
+    .demo-shell{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:14px; align-items:start;}
+    .demo-box{border:1px dashed rgba(15,23,42,.1); border-radius:18px; padding:18px; background:#fff; min-height:260px;}
+    .code-note{
+      background:#0b1220; color:#d7e3f4; border-radius:18px; padding:14px 14px 10px;
+      font-family:var(--mono); font-size:12px; line-height:1.7; box-shadow:0 10px 24px rgba(2,6,23,.18); min-height:260px;
+    }
+    .code-note .title{font-family:var(--sans); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:#93c5fd; margin-bottom:8px; font-weight:700;}
+    .code-note code{white-space:pre-wrap; color:#e2e8f0;}
+    .hl{color:#7dd3fc}.val{color:#fcd34d}.ok{color:#86efac}.warn{color:#fca5a5}
+    .muted{color:var(--muted)} .brand{font-weight:700} .brand.pro{font-weight:650;letter-spacing:-.03em}
+    .badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .badge.pro{background:rgba(37,99,235,.1); color:#1d4ed8; border:1px solid rgba(37,99,235,.14)}
+    .status{display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:600}
+    .status.success{background:rgba(22,163,74,.1); color:#166534}
+    .status.pending{background:rgba(217,119,6,.1); color:#92400e}
+    .status.failed{background:rgba(220,38,38,.1); color:#991b1b}
+
+    /* common cards */
+    .simple-bad{border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad); background:#fff}
+    .simple-pro{border:none; outline:1px solid rgba(2,6,23,.08); border-radius:18px; box-shadow:var(--shadow-pro); background:#fff}
+
+    /* tabs */
+    .tabs{display:flex; gap:8px; align-items:center}
+    .tab.bad{padding:10px 14px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; font-size:14px}
+    .tab.bad.active{background:#eff6ff; color:#1d4ed8}
+    .tab.pro{padding:8px 12px; border:none; border-radius:999px; background:transparent; font-size:14px; color:#475569; font-weight:600}
+    .tab.pro.active{background:rgba(37,99,235,.1); color:#1d4ed8; box-shadow:inset 0 0 0 1px rgba(37,99,235,.14)}
+    .tab-panel{margin-top:14px; padding:16px; border-radius:16px}
+
+    /* sidebar */
+    .sidebar-shell{display:grid; grid-template-columns:220px 1fr; gap:14px}
+    .sidebar.bad{padding:12px; background:#fff; border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad)}
+    .sidebar.pro{padding:12px; background:rgba(255,255,255,.88); outline:1px solid rgba(2,6,23,.08); border-radius:18px; box-shadow:var(--shadow-pro)}
+    .side-item{padding:10px 12px; border-radius:12px; font-size:14px; color:#475569}
+    .side-item.bad.active{background:#eff6ff; color:#1d4ed8}
+    .side-item.pro.active{background:rgba(37,99,235,.1); color:#1d4ed8; font-weight:600}
+    .content-pane{padding:16px; min-height:180px}
+
+    /* empty state */
+    .empty.bad,.empty.pro{display:grid; place-items:center; min-height:240px; text-align:center}
+    .icon-circle{width:56px;height:56px;border-radius:999px;display:grid;place-items:center;margin:0 auto 14px}
+    .icon-circle.bad{background:#f1f5f9;border:1px solid #cbd5e1}
+    .icon-circle.pro{background:linear-gradient(180deg,#f8fbff,#eef4ff); outline:1px solid rgba(37,99,235,.12); box-shadow:var(--shadow-pro)}
+
+    /* toast alert */
+    .stack{display:grid; gap:12px}
+    .toast.bad,.alert.bad{padding:14px 16px; border:1px solid #cbd5e1; border-radius:12px; box-shadow:var(--shadow-bad); background:#fff}
+    .toast.pro,.alert.pro{padding:14px 16px; outline:1px solid rgba(2,6,23,.08); border-radius:16px; box-shadow:var(--shadow-pro); background:#fff}
+    .alert.pro.info{background:linear-gradient(180deg,#f8fbff,#f3f8ff)}
+    .toast-row{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+
+    /* search filter */
+    .toolbar{display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center}
+    .search.bad,.filter.bad{
+      padding:11px 13px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; font-size:14px;
+    }
+    .search.pro,.filter.pro{
+      padding:10px 12px; border:1px solid rgba(15,23,42,.1); border-radius:14px; background:rgba(255,255,255,.92); font-size:14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+    }
+
+    /* dashboard */
+    .widget-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .widget.bad{padding:16px; border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad); background:#fff}
+    .widget.pro{padding:16px; outline:1px solid rgba(2,6,23,.08); border-radius:18px; box-shadow:var(--shadow-pro); background:#fff}
+    .spark{height:54px; border-radius:10px; background:linear-gradient(180deg,#dbeafe,#eff6ff); margin-top:12px; position:relative; overflow:hidden}
+    .spark:after{content:""; position:absolute; inset:16px 8px 10px 8px; border-radius:999px; border-top:3px solid rgba(37,99,235,.7); transform:skewX(-10deg)}
+
+    /* auth */
+    .auth-stage{min-height:280px; display:grid; place-items:center; background:linear-gradient(180deg,#eef2ff,#f8fafc); border-radius:18px; padding:18px}
+    .auth.bad{width:min(100%,380px); padding:18px; border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad); background:#fff}
+    .auth.pro{width:min(100%,400px); padding:22px; outline:1px solid rgba(2,6,23,.08); border-radius:22px; box-shadow:var(--shadow-pro); background:rgba(255,255,255,.96); backdrop-filter: blur(10px)}
+    .input.bad,.input.pro{width:100%; padding:11px 13px; font-size:14px}
+    .input.bad{border:1px solid #cbd5e1; border-radius:10px}
+    .input.pro{border:1px solid rgba(15,23,42,.1); border-radius:14px; background:rgba(255,255,255,.92)}
+
+    /* settings */
+    .settings-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .setting.bad,.setting.pro{padding:16px; background:#fff}
+    .setting.bad{border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad)}
+    .setting.pro{outline:1px solid rgba(2,6,23,.08); border-radius:18px; box-shadow:var(--shadow-pro)}
+    .switch{width:42px; height:24px; border-radius:999px; position:relative}
+    .switch.bad{background:#cbd5e1}
+    .switch.pro{background:#bfdbfe}
+    .switch:after{content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:999px; background:#fff}
+    .switch.pro:after{left:21px}
+
+    .tips{margin-top:28px; background:linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.82)); border:1px solid var(--line); border-radius:28px; box-shadow:var(--shadow-soft); padding:26px;}
+    .tips h3{margin:0 0 14px; font-size:22px; letter-spacing:-.03em;}
+    .tips ol{margin:0; padding-left:22px; color:#334155;}
+    .tips li{margin:10px 0;}
+    .foot{margin-top:16px; padding:0 10px; color:#64748b; font-size:13px;}
+    .kbd{font-family:var(--mono); font-size:12px; background:#eef2ff; border:1px solid #dbeafe; padding:2px 6px; border-radius:8px; color:#334155;}
+    @media (max-width: 1220px){ .demo-shell{grid-template-columns:1fr}.code-note{min-height:auto}.sidebar-shell,.settings-grid,.widget-grid,.toolbar{grid-template-columns:1fr} }
+    @media (max-width: 960px){ .hero,.compare,.sidebar-shell{grid-template-columns:1fr}.section-head{display:block}.section-head p{text-align:left;margin-top:8px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="canvas">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Frontend Detail Lab v4</p>
+          <h1>前端全模块专业细节对比模板</h1>
+          <p>这一版继续补齐 Tabs、Sidebar、Empty State、Toast / Alert、Search Bar / Filter Panel、Dashboard Widget、登录页、设置页等模块，左右两侧都附 CSS 参数，方便逐项对比学习。</p>
+        </div>
+        <div class="actions">
+          <button class="btn">模块化对照学习</button>
+          <button class="btn secondary">原始 vs 专业 CSS</button>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">15 / Tabs</p><h2>Tabs</h2></div>
+          <p>Tabs 不是一排按钮，它是信息分组器。关键在于 active 态是否清楚、整体是否轻盈。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="tabs"><div class="tab bad active">Overview</div><div class="tab bad">Revenue</div><div class="tab bad">Invoices</div></div>
+              <div class="tab-panel simple-bad" style="margin-top:14px;">Current tab content</div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.tab {
+  <span class="hl">padding</span>: <span class="val">10px 14px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.tab.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="tabs"><div class="tab pro active">Overview</div><div class="tab pro">Revenue</div><div class="tab pro">Invoices</div></div>
+              <div class="tab-panel simple-pro" style="margin-top:14px;">Current tab content</div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.tab {
+  <span class="hl">padding</span>: <span class="val">8px 12px</span>;
+  <span class="hl">border</span>: <span class="val">none</span>;
+  <span class="hl">border-radius</span>: <span class="val">999px</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}
+.tab.active {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.10)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">inset 0 0 0 1px rgba(37,99,235,.14)</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">16 / Sidebar</p><h2>Sidebar</h2></div>
+          <p>Sidebar 容易写得很“管理后台模板化”。专业版本会更克制、更安静，active 态更像引导而不是高亮块。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="sidebar-shell"><div class="sidebar bad"><div class="side-item bad active">Dashboard</div><div class="side-item">Invoices</div><div class="side-item">Settings</div></div><div class="content-pane simple-bad">Main content area</div></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.sidebar {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.side-item.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+  <span class="hl">color</span>: <span class="val">#1d4ed8</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="sidebar-shell"><div class="sidebar pro"><div class="side-item pro active">Dashboard</div><div class="side-item">Invoices</div><div class="side-item">Settings</div></div><div class="content-pane simple-pro">Main content area</div></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.sidebar {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.88)</span>;
+}
+.side-item.active {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.10)</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Empty state -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">17 / Empty State</p><h2>Empty State</h2></div>
+          <p>空状态不是“没有内容”，而是一次引导用户理解下一步的机会。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box empty bad">
+              <div><div class="icon-circle bad">📄</div><div class="brand">No invoices</div><p class="muted">You have no data.</p><button class="btn" style="margin-top:8px">Create</button></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.empty-icon {
+  <span class="hl">width</span>: <span class="val">56px</span>;
+  <span class="hl">height</span>: <span class="val">56px</span>;
+  <span class="hl">background</span>: <span class="val">#f1f5f9</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box empty pro">
+              <div><div class="icon-circle pro">📄</div><div class="brand pro">No invoices yet</div><p class="muted" style="max-width:34ch;margin:8px auto 0;">Create your first invoice to start tracking collections and payment status in one place.</p><button class="btn" style="margin-top:12px">Create invoice</button></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.empty-icon {
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#f8fbff,#eef4ff)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.12)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+
+.empty-copy {
+  <span class="hl">max-width</span>: <span class="val">34ch</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Toast / Alert -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">18 / Toast / Alert</p><h2>Toast / Alert</h2></div>
+          <p>系统反馈组件要让人一眼知道“发生了什么”和“该不该处理”。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box stack">
+              <div class="toast bad"><div class="toast-row"><div><div class="brand">Saved</div><div class="muted">Changes updated.</div></div><span>×</span></div></div>
+              <div class="alert bad"><div class="brand">Billing failed</div><div class="muted">Update card details.</div></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.toast, .alert {
+  <span class="hl">padding</span>: <span class="val">14px 16px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box stack">
+              <div class="toast pro"><div class="toast-row"><div><div class="brand pro">Saved successfully</div><div class="muted">Your workspace preferences were updated.</div></div><span class="status success">Done</span></div></div>
+              <div class="alert pro info"><div class="brand pro">Billing action required</div><div class="muted">Your backup card expires in 5 days. Update it to avoid failed renewals.</div></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.toast, .alert {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+
+.alert.info {
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#f8fbff,#f3f8ff)</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search Filter -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">19 / Search & Filter</p><h2>Search Bar / Filter Panel</h2></div>
+          <p>搜索和筛选是“高频操作区”，最怕密度混乱、点击目标过小、视觉权重失衡。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="toolbar"><input class="search bad" value="Search invoices" /><div class="filter bad">Status</div><div class="filter bad">Sort</div></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.search, .filter {
+  <span class="hl">padding</span>: <span class="val">11px 13px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="toolbar"><input class="search pro" value="Search invoices" /><div class="filter pro">Status: All</div><div class="filter pro">Sort: Recent</div></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.search, .filter {
+  <span class="hl">padding</span>: <span class="val">10px 12px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(15,23,42,.10)</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.92)</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard Widget -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">20 / Dashboard Widget</p><h2>Dashboard Widget</h2></div>
+          <p>仪表盘卡片的差别常常不在信息本身，而在标题层级、边界、数字强调和图表占比。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="widget-grid"><div class="widget bad"><div class="muted">Revenue</div><div style="font-size:28px;font-weight:700">$82,451</div><div class="spark"></div></div><div class="widget bad"><div class="muted">Expenses</div><div style="font-size:28px;font-weight:700">$21,804</div><div class="spark"></div></div></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.widget {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 10px 24px rgba(0,0,0,.12)</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="widget-grid"><div class="widget pro"><div class="eyebrow" style="margin-bottom:8px">Revenue</div><div style="font-size:30px;font-weight:700;letter-spacing:-.04em">$82,451</div><div class="muted">+12.4% vs last month</div><div class="spark"></div></div><div class="widget pro"><div class="eyebrow" style="margin-bottom:8px">Expenses</div><div style="font-size:30px;font-weight:700;letter-spacing:-.04em">$21,804</div><div class="muted">-3.1% vs last month</div><div class="spark"></div></div></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.widget {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+
+.metric {
+  <span class="hl">letter-spacing</span>: <span class="val">-0.04em</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Login -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">21 / Auth</p><h2>登录页</h2></div>
+          <p>登录页不是只要输入框和按钮就结束，结构、层级、说明和品牌语气会直接影响专业感。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="auth-stage"><div class="auth bad"><div class="brand">Sign in</div><div style="display:grid;gap:10px;margin-top:14px"><input class="input bad" value="Email" /><input class="input bad" value="Password" /><button class="btn" style="width:100%">Continue</button></div></div></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.auth-card {
+  <span class="hl">padding</span>: <span class="val">18px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="auth-stage"><div class="auth pro"><div class="eyebrow" style="margin-bottom:10px">Welcome back</div><div class="brand pro" style="font-size:28px;letter-spacing:-.04em">Sign in to Axiom</div><p class="muted" style="margin:8px 0 0;">Use your workspace email to continue.</p><div style="display:grid;gap:10px;margin-top:14px"><input class="input pro" value="Email" /><input class="input pro" value="Password" /><button class="btn" style="width:100%">Continue</button></div></div></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.auth-card {
+  <span class="hl">padding</span>: <span class="val">22px</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.96)</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">22 / Settings</p><h2>设置页</h2></div>
+          <p>设置页最重要的是信息组织和控制密度。要看起来可配置，但不能让人感到吵。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="settings-grid"><div class="setting bad"><div class="brand">Email notifications</div><div class="muted">Receive updates</div><div style="margin-top:14px" class="switch bad"></div></div><div class="setting bad"><div class="brand">Two-factor auth</div><div class="muted">Extra security</div><div style="margin-top:14px" class="switch bad"></div></div></div>
+            </div><aside class="code-note"><div class="title">原始参数</div><code>.setting-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.switch {
+  <span class="hl">background</span>: <span class="val">#cbd5e1</span>;
+}</code></aside></div>
+          </div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell"><div class="demo-box">
+              <div class="settings-grid"><div class="setting pro"><div class="brand pro">Email notifications</div><div class="muted">Receive weekly summaries and billing alerts.</div><div style="margin-top:14px" class="switch pro"></div></div><div class="setting pro"><div class="brand pro">Two-factor auth</div><div class="muted">Require code verification for admin actions.</div><div style="margin-top:14px" class="switch pro"></div></div></div>
+            </div><aside class="code-note"><div class="title">专业参数</div><code>.setting-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+.switch {
+  <span class="hl">background</span>: <span class="val">#bfdbfe</span>;
+}</code></aside></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tips">
+        <p class="eyebrow">Developer Notes</p>
+        <h3>这一版新增模块怎么训练</h3>
+        <ol>
+          <li>Tabs 看 active 态是不是“轻而明确”，不要像一排厚按钮。</li>
+          <li>Sidebar 看导航是否安静、层级是否清楚，active 是否只是轻提示而不是重色块。</li>
+          <li>Empty State 看是否有引导文案和动作，不要只写一句 “No data”。</li>
+          <li>Toast / Alert 看反馈是否清楚，严重程度是否能从视觉上快速判断。</li>
+          <li>Search / Filter 看高频操作区是否整洁，输入框和筛选器是否形成统一系统。</li>
+          <li>Dashboard Widget 看数值、标签、辅助趋势信息有没有形成明确的信息层级。</li>
+          <li>登录页和设置页要重点看：圆角、边界、输入框、说明文案、开关控件是否都在同一视觉语言里。</li>
+        </ol>
+      </section>
+
+      <p class="foot">v4 已覆盖：Tabs、Sidebar、Empty State、Toast / Alert、Search Bar / Filter Panel、Dashboard Widget、登录页、设置页。你现在已经有一套相对完整的前端视觉 code review 训练模板。</p>
+    </div>
+  </div>
+</body>
+</html>

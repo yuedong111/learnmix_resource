@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>前端专业细节全模块对比模板 v5</title>
+  <style>
+    :root{
+      --bg:#f6f8fc;
+      --panel:rgba(255,255,255,.84);
+      --card:#fff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:rgba(15,23,42,.08);
+      --shadow-soft:0 12px 30px rgba(15,23,42,.06);
+      --shadow-pro:0 14px 32px rgba(15,23,42,.08), 0 2px 8px rgba(15,23,42,.04);
+      --shadow-bad:0 10px 24px rgba(0,0,0,.12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "SF Pro Display", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+      --blue:#2563eb; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;padding:0;
+      background:
+        radial-gradient(1200px 500px at 20% -10%, rgba(14,165,233,.08), transparent 60%),
+        radial-gradient(1200px 500px at 90% -10%, rgba(99,102,241,.06), transparent 60%),
+        var(--bg);
+      color:var(--text); font-family:var(--sans); line-height:1.5;
+    }
+    .page{width:min(1480px, calc(100vw - 24px)); margin:20px auto 72px;}
+    .canvas{
+      border-left:1px solid var(--line); border-right:1px solid var(--line);
+      background:
+        linear-gradient(var(--line), var(--line)) top/100% 1px no-repeat,
+        linear-gradient(var(--line), var(--line)) bottom/100% 1px no-repeat;
+      padding:8px;
+    }
+    .hero{
+      display:grid; grid-template-columns:1.08fr .92fr; gap:24px; align-items:end;
+      padding:36px; background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.74));
+      border:1px solid var(--line); box-shadow:var(--shadow-soft); border-radius:32px;
+      backdrop-filter: blur(10px); margin-bottom:28px;
+    }
+    .eyebrow{
+      font:600 12px/1 var(--mono); letter-spacing:.18em; text-transform:uppercase;
+      color:#334155; margin:0 0 16px;
+    }
+    h1{margin:0; font-size:clamp(30px,4vw,52px); line-height:.98; letter-spacing:-.045em; font-weight:650;}
+    .hero p{margin:12px 0 0; color:var(--muted); max-width:60ch; font-size:15px;}
+    .actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-start;}
+    .btn{
+      appearance:none; border:none; background:#111827; color:#fff; padding:12px 18px;
+      border-radius:999px; font-weight:600; letter-spacing:-.01em; box-shadow:0 6px 18px rgba(15,23,42,.14);
+    }
+    .btn.secondary{
+      background:rgba(255,255,255,.82); color:var(--text); box-shadow:none;
+      border:1px solid rgba(15,23,42,.1); outline:1px solid rgba(255,255,255,.7); outline-offset:-2px;
+    }
+    .section{margin-top:28px; padding-top:8px; border-top:1px solid var(--line);}
+    .section-head{display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:16px; padding:0 8px;}
+    .section-head h2{margin:0; font-size:24px; letter-spacing:-.03em;}
+    .section-head p{margin:0; color:var(--muted); font-size:14px; max-width:78ch; text-align:right;}
+    .compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 8px;}
+    .panel{
+      background:var(--panel); border:1px solid var(--line); border-radius:24px; padding:18px; min-height:360px;
+      box-shadow:var(--shadow-soft); position:relative; overflow:hidden; backdrop-filter: blur(10px);
+    }
+    .label{display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#0f172ab8; margin-bottom:14px;}
+    .dot{width:8px;height:8px;border-radius:999px;background:#94a3b8}.dot.bad{background:#f97316}.dot.good{background:#22c55e}
+    .demo-shell{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:14px; align-items:start;}
+    .demo-box{border:1px dashed rgba(15,23,42,.1); border-radius:18px; padding:18px; background:#fff; min-height:260px;}
+    .code-note{
+      background:#0b1220; color:#d7e3f4; border-radius:18px; padding:14px 14px 10px;
+      font-family:var(--mono); font-size:12px; line-height:1.7; box-shadow:0 10px 24px rgba(2,6,23,.18); min-height:260px;
+    }
+    .code-note .title{font-family:var(--sans); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:#93c5fd; margin-bottom:8px; font-weight:700;}
+    .code-note code{white-space:pre-wrap; color:#e2e8f0;}
+    .hl{color:#7dd3fc}.val{color:#fcd34d}.ok{color:#86efac}.warn{color:#fca5a5}
+    .muted{color:var(--muted)} .brand{font-weight:700} .brand.pro{font-weight:650;letter-spacing:-.03em}
+    .badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .badge.pro{background:rgba(37,99,235,.1); color:#1d4ed8; border:1px solid rgba(37,99,235,.14)}
+    .status{display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:600}
+    .status.success{background:rgba(22,163,74,.1); color:#166534}
+    .status.pending{background:rgba(217,119,6,.1); color:#92400e}
+    .status.failed{background:rgba(220,38,38,.1); color:#991b1b}
+    .simple-bad{border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad); background:#fff}
+    .simple-pro{border:none; outline:1px solid rgba(2,6,23,.08); border-radius:18px; box-shadow:var(--shadow-pro); background:#fff}
+    .btn-sm{padding:8px 12px; border-radius:999px; font-size:13px; font-weight:600}
+    .chip{display:inline-flex; padding:6px 10px; border-radius:999px; font-size:12px}
+
+    /* pagination */
+    .pagination{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .page-item.bad{padding:9px 12px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; font-size:14px}
+    .page-item.bad.active{background:#eff6ff; color:#1d4ed8}
+    .page-item.pro{padding:8px 11px; border:none; border-radius:12px; background:transparent; font-size:14px; color:#475569; font-weight:600}
+    .page-item.pro.active{background:#111827; color:#fff; box-shadow:0 8px 18px rgba(15,23,42,.14)}
+    .page-item.pro.ghost{outline:1px solid rgba(2,6,23,.08); background:#fff}
+
+    /* dropdown */
+    .dropdown-shell{display:grid; gap:12px}
+    .select-trigger.bad,.select-trigger.pro{display:flex; justify-content:space-between; align-items:center}
+    .select-trigger.bad{padding:11px 13px; border:1px solid #cbd5e1; border-radius:10px; background:#fff}
+    .select-trigger.pro{padding:10px 12px; border:1px solid rgba(15,23,42,.1); border-radius:14px; background:rgba(255,255,255,.92); box-shadow: inset 0 1px 0 rgba(255,255,255,.75)}
+    .menu.bad{margin-top:10px; border:1px solid #d1d5db; border-radius:12px; box-shadow:var(--shadow-bad); overflow:hidden}
+    .menu.pro{margin-top:10px; outline:1px solid rgba(2,6,23,.08); border-radius:16px; box-shadow:var(--shadow-pro); overflow:hidden}
+    .menu-item{padding:11px 13px; background:#fff; font-size:14px}
+    .menu.pro .menu-item:hover{background:#fafcff}
+    .menu-item.active{color:#1d4ed8; background:rgba(37,99,235,.06)}
+
+    /* drawer */
+    .drawer-stage{min-height:280px; display:grid; place-items:end; background:linear-gradient(180deg,#eef2ff,#f8fafc); border-radius:18px; padding:18px}
+    .drawer.bad{width:min(100%,360px); height:240px; background:#fff; border:1px solid #d1d5db; border-radius:16px 16px 0 0; box-shadow:0 -8px 24px rgba(0,0,0,.14); padding:18px}
+    .drawer.pro{width:min(100%,400px); height:250px; background:rgba(255,255,255,.96); outline:1px solid rgba(2,6,23,.08); border-radius:24px 24px 0 0; box-shadow:0 -18px 42px rgba(15,23,42,.16), 0 -4px 12px rgba(15,23,42,.06); padding:20px}
+    .handle{width:44px; height:5px; border-radius:999px; background:#cbd5e1; margin:0 auto 14px}
+    .drawer.pro .handle{background:#dbeafe}
+
+    /* stepper */
+    .steps{display:grid; gap:14px}
+    .step-row{display:grid; grid-template-columns:28px 1fr; gap:10px; align-items:start}
+    .step-dot.bad,.step-dot.pro{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;font-size:13px;font-weight:700}
+    .step-dot.bad{background:#fff;border:1px solid #cbd5e1}
+    .step-dot.pro{background:rgba(37,99,235,.1);color:#1d4ed8;outline:1px solid rgba(37,99,235,.14)}
+    .step-card.bad,.step-card.pro{padding:14px;background:#fff}
+    .step-card.bad{border:1px solid #d1d5db;border-radius:12px;box-shadow:var(--shadow-bad)}
+    .step-card.pro{outline:1px solid rgba(2,6,23,.08);border-radius:16px;box-shadow:var(--shadow-pro)}
+
+    /* calendar */
+    .cal.bad,.cal.pro{padding:14px; background:#fff}
+    .cal.bad{border:1px solid #d1d5db; border-radius:14px; box-shadow:var(--shadow-bad)}
+    .cal.pro{outline:1px solid rgba(2,6,23,.08); border-radius:18px; box-shadow:var(--shadow-pro)}
+    .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:12px}
+    .day{aspect-ratio:1; display:grid; place-items:center; font-size:13px; border-radius:10px}
+    .day.bad{border:1px solid #e5e7eb}
+    .day.bad.active{background:#eff6ff; color:#1d4ed8}
+    .day.pro{background:#f8fafc}
+    .day.pro.active{background:#111827; color:#fff; box-shadow:0 8px 18px rgba(15,23,42,.14)}
+    .day.pro.range{background:rgba(37,99,235,.08); color:#1d4ed8}
+
+    /* upload */
+    .upload.bad,.upload.pro{min-height:220px; display:grid; place-items:center; text-align:center}
+    .upload.bad{border:2px dashed #cbd5e1; border-radius:16px; background:#fff}
+    .upload.pro{border:2px dashed rgba(37,99,235,.22); border-radius:22px; background:linear-gradient(180deg,#fbfdff,#f4f8ff); outline:1px solid rgba(37,99,235,.08)}
+    .upload-icon{font-size:28px; margin-bottom:10px}
+
+    /* detail page */
+    .detail-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:12px}
+    .detail-card.bad,.detail-card.pro{padding:16px;background:#fff}
+    .detail-card.bad{border:1px solid #d1d5db;border-radius:14px;box-shadow:var(--shadow-bad)}
+    .detail-card.pro{outline:1px solid rgba(2,6,23,.08);border-radius:18px;box-shadow:var(--shadow-pro)}
+    .metric-lg{font-size:32px;font-weight:700;letter-spacing:-.04em}
+    .kv{display:grid;grid-template-columns:120px 1fr;gap:8px;font-size:14px}
+    .divider{height:1px;background:rgba(15,23,42,.08);margin:12px 0}
+
+    /* profile page */
+    .profile-shell{display:grid; grid-template-columns:120px 1fr; gap:16px; align-items:start}
+    .avatar.bad,.avatar.pro{width:120px;height:120px;border-radius:999px;display:grid;place-items:center;font-weight:700;font-size:28px}
+    .avatar.bad{background:#e2e8f0;border:1px solid #cbd5e1}
+    .avatar.pro{background:linear-gradient(180deg,#f8fbff,#eef4ff);outline:1px solid rgba(37,99,235,.12);box-shadow:var(--shadow-pro);color:#1d4ed8}
+    .meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .chip.bad{background:#f8fafc;border:1px solid #cbd5e1;color:#475569}
+    .chip.pro{background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.12);color:#1d4ed8}
+
+    .tips{margin-top:28px; background:linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.82)); border:1px solid var(--line); border-radius:28px; box-shadow:var(--shadow-soft); padding:26px;}
+    .tips h3{margin:0 0 14px; font-size:22px; letter-spacing:-.03em;}
+    .tips ol{margin:0; padding-left:22px; color:#334155;}
+    .tips li{margin:10px 0;}
+    .foot{margin-top:16px; padding:0 10px; color:#64748b; font-size:13px;}
+    .kbd{font-family:var(--mono); font-size:12px; background:#eef2ff; border:1px solid #dbeafe; padding:2px 6px; border-radius:8px; color:#334155;}
+    @media (max-width: 1220px){ .demo-shell{grid-template-columns:1fr}.code-note{min-height:auto}.detail-grid,.profile-shell{grid-template-columns:1fr} }
+    @media (max-width: 960px){ .hero,.compare,.detail-grid,.profile-shell{grid-template-columns:1fr}.section-head{display:block}.section-head p{text-align:left;margin-top:8px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="canvas">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Frontend Detail Lab v5</p>
+          <h1>前端全模块专业细节对比模板</h1>
+          <p>这一版继续把 Pagination、Dropdown / Select Menu、Drawer / Slide-over、Stepper / Wizard、Calendar / Date Picker、Upload / Drag & Drop、Data Detail Page、Profile / Account Page 都补齐了，仍然保持左右两侧各自带 CSS 参数。</p>
+        </div>
+        <div class="actions">
+          <button class="btn">完整模块库</button>
+          <button class="btn secondary">双侧 CSS 对照</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">23 / Pagination</p><h2>Pagination</h2></div>
+          <p>分页控件不是“数字按钮列表”，而是浏览节奏控制器。专业版通常更轻、更紧凑。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="pagination"><div class="page-item bad">Prev</div><div class="page-item bad active">1</div><div class="page-item bad">2</div><div class="page-item bad">3</div><div class="page-item bad">Next</div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.page-item {
+  <span class="hl">padding</span>: <span class="val">9px 12px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.page-item.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="pagination"><div class="page-item pro ghost">Prev</div><div class="page-item pro active">1</div><div class="page-item pro">2</div><div class="page-item pro">3</div><div class="page-item pro ghost">Next</div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.page-item {
+  <span class="hl">padding</span>: <span class="val">8px 11px</span>;
+  <span class="hl">border</span>: <span class="val">none</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}
+.page-item.active {
+  <span class="hl">background</span>: <span class="val">#111827</span>;
+  <span class="hl">color</span>: <span class="val">#fff</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">24 / Dropdown</p><h2>Dropdown / Select Menu</h2></div>
+          <p>下拉菜单的专业度主要看 trigger、菜单容器、hover 态和当前选中态是否统一。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box dropdown-shell">
+            <div class="select-trigger bad"><span>Status</span><span>▾</span></div>
+            <div class="menu bad"><div class="menu-item active">All</div><div class="menu-item">Paid</div><div class="menu-item">Pending</div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.trigger {
+  <span class="hl">padding</span>: <span class="val">11px 13px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.menu {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box dropdown-shell">
+            <div class="select-trigger pro"><span>Status: All</span><span>▾</span></div>
+            <div class="menu pro"><div class="menu-item active">All</div><div class="menu-item">Paid</div><div class="menu-item">Pending</div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.trigger {
+  <span class="hl">padding</span>: <span class="val">10px 12px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(15,23,42,.10)</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.menu {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">25 / Drawer</p><h2>Drawer / Slide-over</h2></div>
+          <p>抽屉组件是“半层级容器”，边角、阴影和顶部 handle 会直接影响专业感。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="drawer-stage"><div class="drawer bad"><div class="handle"></div><div class="brand">Quick actions</div><p class="muted">Manage invoice status and reminders.</p></div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.drawer {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px 16px 0 0</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 -8px 24px rgba(0,0,0,.14)</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="drawer-stage"><div class="drawer pro"><div class="handle"></div><div class="eyebrow" style="margin-bottom:8px">Quick actions</div><div class="brand pro">Manage invoice reminders</div><p class="muted" style="margin-top:8px">Edit payment status, resend invoice links, and schedule follow-up reminders.</p></div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.drawer {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">24px 24px 0 0</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 -18px 42px rgba(15,23,42,.16)</span>;
+}
+.handle {
+  <span class="hl">background</span>: <span class="val">#dbeafe</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">26 / Stepper</p><h2>Stepper / Wizard</h2></div>
+          <p>向导步骤不是只显示“第几步”，还要让用户感知当前位置和下一步结构。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box steps">
+            <div class="step-row"><div class="step-dot bad">1</div><div class="step-card bad"><div class="brand">Workspace</div><div class="muted">Create your workspace</div></div></div>
+            <div class="step-row"><div class="step-dot bad">2</div><div class="step-card bad"><div class="brand">Billing</div><div class="muted">Add payment method</div></div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.step-dot {
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">background</span>: <span class="val">#fff</span>;
+}
+.step-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box steps">
+            <div class="step-row"><div class="step-dot pro">1</div><div class="step-card pro"><div class="brand pro">Workspace</div><div class="muted">Create your workspace and invite the first team members.</div></div></div>
+            <div class="step-row"><div class="step-dot pro">2</div><div class="step-card pro"><div class="brand pro">Billing</div><div class="muted">Add payment method and select the right plan for your team.</div></div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.step-dot {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.10)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.14)</span>;
+  <span class="hl">color</span>: <span class="val">#1d4ed8</span>;
+}
+.step-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">27 / Calendar</p><h2>Calendar / Date Picker</h2></div>
+          <p>日历控件要看选中态、范围态、默认态能不能一眼分清，而不是一堆小方格。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="cal bad"><div class="brand">April 2026</div><div class="cal-grid"><div class="day bad">1</div><div class="day bad">2</div><div class="day bad">3</div><div class="day bad">4</div><div class="day bad">5</div><div class="day bad">6</div><div class="day bad">7</div><div class="day bad">8</div><div class="day bad">9</div><div class="day bad">10</div><div class="day bad">11</div><div class="day bad">12</div><div class="day bad">13</div><div class="day bad active">14</div></div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.day {
+  <span class="hl">border</span>: <span class="val">1px solid #e5e7eb</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.day.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="cal pro"><div class="brand pro">April 2026</div><div class="cal-grid"><div class="day pro">1</div><div class="day pro">2</div><div class="day pro">3</div><div class="day pro">4</div><div class="day pro">5</div><div class="day pro">6</div><div class="day pro">7</div><div class="day pro">8</div><div class="day pro">9</div><div class="day pro">10</div><div class="day pro">11</div><div class="day pro range">12</div><div class="day pro range">13</div><div class="day pro active">14</div></div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.day {
+  <span class="hl">background</span>: <span class="val">#f8fafc</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.day.active {
+  <span class="hl">background</span>: <span class="val">#111827</span>;
+  <span class="hl">color</span>: <span class="val">#fff</span>;
+}
+.day.range {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.08)</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">28 / Upload</p><h2>Upload / Drag & Drop</h2></div>
+          <p>上传区最常见的问题是“像一个空盒子”。专业版会让用户更清楚地感知拖拽目标和上传格式。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="upload bad"><div><div class="upload-icon">⬆</div><div class="brand">Upload file</div><div class="muted">Drag file here</div></div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.upload {
+  <span class="hl">border</span>: <span class="val">2px dashed #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+  <span class="hl">background</span>: <span class="val">#fff</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="upload pro"><div><div class="upload-icon">⬆</div><div class="brand pro">Drop files to upload</div><div class="muted">CSV, XLSX, or PDF up to 20MB. You can also browse from your device.</div><button class="btn btn-sm" style="margin-top:12px">Choose files</button></div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.upload {
+  <span class="hl">border</span>: <span class="val">2px dashed rgba(37,99,235,.22)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#fbfdff,#f4f8ff)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.08)</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">29 / Data Detail</p><h2>Data Detail Page</h2></div>
+          <p>详情页的关键不是堆字段，而是把“主信息、状态、补充字段”分层组织好。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="detail-grid"><div class="detail-card bad"><div class="brand">Invoice #4821</div><div class="muted">Pending</div><div class="divider"></div><div class="kv"><div>Customer</div><div>Northwind</div><div>Due date</div><div>Apr 14</div><div>Total</div><div>$8,400</div></div></div><div class="detail-card bad"><div class="brand">Notes</div><p class="muted">Payment reminder scheduled.</p></div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.detail-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.kv {
+  <span class="hl">grid-template-columns</span>: <span class="val">120px 1fr</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="detail-grid"><div class="detail-card pro"><div class="eyebrow" style="margin-bottom:8px">Invoice</div><div class="metric-lg">#4821</div><div style="margin-top:8px"><span class="status pending">Pending</span></div><div class="divider"></div><div class="kv"><div class="muted">Customer</div><div>Northwind</div><div class="muted">Due date</div><div>Apr 14</div><div class="muted">Total</div><div>$8,400</div></div></div><div class="detail-card pro"><div class="brand pro">Activity</div><p class="muted">Payment reminder scheduled for Apr 10. Last viewed by billing owner 2 hours ago.</p></div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.detail-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+.metric {
+  <span class="hl">letter-spacing</span>: <span class="val">-0.04em</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">30 / Profile</p><h2>Profile / Account Page</h2></div>
+          <p>个人资料页不是“头像 + 姓名”就结束，标签、角色、联系信息和资料分组都需要有秩序。</p>
+        </div>
+        <div class="compare">
+          <div class="panel"><div class="label"><span class="dot bad"></span>原始效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="profile-shell"><div class="avatar bad">YD</div><div><div class="brand">Yue Dong</div><div class="muted">Frontend Engineer</div><div class="meta-row"><span class="chip bad">Admin</span><span class="chip bad">Taipei</span></div><p class="muted" style="margin-top:12px">Works on growth pages and internal design systems.</p></div></div>
+          </div><aside class="code-note"><div class="title">原始参数</div><code>.avatar {
+  <span class="hl">background</span>: <span class="val">#e2e8f0</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}
+.chip {
+  <span class="hl">background</span>: <span class="val">#f8fafc</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}</code></aside></div></div>
+          <div class="panel"><div class="label"><span class="dot good"></span>专业效果 + CSS</div><div class="demo-shell"><div class="demo-box">
+            <div class="profile-shell"><div class="avatar pro">YD</div><div><div class="eyebrow" style="margin-bottom:8px">Account profile</div><div class="brand pro" style="font-size:28px;letter-spacing:-.04em">Yue Dong</div><div class="muted">Frontend Engineer</div><div class="meta-row"><span class="chip pro">Admin</span><span class="chip pro">Taipei</span><span class="chip pro">Design Systems</span></div><p class="muted" style="margin-top:12px;max-width:42ch">Works on growth pages, component libraries, and internal visual review standards for product teams.</p></div></div>
+          </div><aside class="code-note"><div class="title">专业参数</div><code>.avatar {
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#f8fbff,#eef4ff)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.12)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+.chip {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.08)</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(37,99,235,.12)</span>;
+}</code></aside></div></div>
+        </div>
+      </section>
+
+      <section class="tips">
+        <p class="eyebrow">Developer Notes</p>
+        <h3>最后这一批模块怎么抓重点</h3>
+        <ol>
+          <li>Pagination 看按钮密度和 active 态，不要又厚又重。</li>
+          <li>Dropdown 看 trigger 和 menu 是不是一个系统，hover/selected 是否清楚。</li>
+          <li>Drawer 看 handle、上边缘圆角和上浮阴影是否自然。</li>
+          <li>Stepper 看当前位置和信息说明能否帮助用户理解流程，而不是只显示数字。</li>
+          <li>Calendar 看默认态、范围态、选中态能否快速区分。</li>
+          <li>Upload 看拖拽区域是否真的像“可投放目标”，不是一块空白虚线框。</li>
+          <li>Detail Page 看主指标、状态、补充字段有没有分层。</li>
+          <li>Profile Page 看头像、身份标签、角色信息和文案是否组织成稳定结构。</li>
+        </ol>
+      </section>
+
+      <p class="foot">v5 新增：Pagination、Dropdown / Select Menu、Drawer / Slide-over、Stepper / Wizard、Calendar / Date Picker、Upload / Drag & Drop、Data Detail Page、Profile / Account Page。到这里，这份模板已经可以作为比较完整的前端视觉 code review 训练手册使用。</p>
+    </div>
+  </div>
+</body>
+</html>
