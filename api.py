@@ -90,6 +90,7 @@ query {{
         endcursor = res.get("endCursor")
         hasNextPage = res.get("hasNextPage")
         items = res.get("items")
+        print(len(items))
         result.extend(items)
         # result.extend([json.dumps(i, ensure_ascii=False, sort_keys=True) for i in items])
     # result = list(set(result))
