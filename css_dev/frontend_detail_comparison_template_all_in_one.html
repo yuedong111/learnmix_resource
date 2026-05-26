@@ -1,0 +1,4666 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>前端专业细节全模块对比模板（合并版）</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --panel: rgba(255, 255, 255, .84);
+      --card: #fff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, .08);
+      --line-2: rgba(15, 23, 42, .12);
+      --shadow-soft: 0 12px 30px rgba(15, 23, 42, .06);
+      --shadow-pro: 0 14px 32px rgba(15, 23, 42, .08), 0 2px 8px rgba(15, 23, 42, .04);
+      --shadow-bad: 0 10px 24px rgba(0, 0, 0, .12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "SF Pro Display", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #d97706;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(1200px 500px at 20% -10%, rgba(14, 165, 233, .08), transparent 60%),
+        radial-gradient(1200px 500px at 90% -10%, rgba(99, 102, 241, .06), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+
+    .page {
+      width: min(1460px, calc(100vw - 24px));
+      margin: 20px auto 72px;
+    }
+
+    .canvas {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background:
+        linear-gradient(var(--line), var(--line)) top/100% 1px no-repeat,
+        linear-gradient(var(--line), var(--line)) bottom/100% 1px no-repeat;
+      padding: 8px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 24px;
+      align-items: end;
+      padding: 36px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .74));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      border-radius: 32px;
+      backdrop-filter: blur(10px);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font: 600 12px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #334155;
+      margin: 0 0 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: .98;
+      letter-spacing: -.045em;
+      font-weight: 650;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      max-width: 60ch;
+      font-size: 15px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      background: #111827;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .14);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, .82);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(15, 23, 42, .1);
+      outline: 1px solid rgba(255, 255, 255, .7);
+      outline-offset: -2px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 78ch;
+      text-align: right;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 8px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      min-height: 360px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #0f172ab8;
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #94a3b8
+    }
+
+    .dot.bad {
+      background: #f97316
+    }
+
+    .dot.good {
+      background: #22c55e
+    }
+
+    .demo-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .demo-box {
+      border: 1px dashed rgba(15, 23, 42, .1);
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      min-height: 260px;
+    }
+
+    .code-note {
+      background: #0b1220;
+      color: #d7e3f4;
+      border-radius: 18px;
+      padding: 14px 14px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      box-shadow: 0 10px 24px rgba(2, 6, 23, .18);
+      min-height: 260px;
+    }
+
+    .code-note .title {
+      font-family: var(--sans);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .code-note code {
+      white-space: pre-wrap;
+      color: #e2e8f0;
+    }
+
+    .hl {
+      color: #7dd3fc
+    }
+
+    .val {
+      color: #fcd34d
+    }
+
+    .ok {
+      color: #86efac
+    }
+
+    .warn {
+      color: #fca5a5
+    }
+
+    .bad-h1 {
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 1.18;
+      text-align: center;
+      margin: 0 0 16px;
+    }
+
+    .pro-h1 {
+      font-size: 50px;
+      font-weight: 650;
+      letter-spacing: -.05em;
+      line-height: .97;
+      margin: 0 0 14px;
+      max-width: 11ch;
+    }
+
+    .bad-p {
+      color: #6b7280;
+      font-size: 16px;
+      line-height: 1.8;
+      text-align: center;
+      max-width: 52ch;
+      margin: 0 auto;
+    }
+
+    .pro-p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 48ch;
+      margin: 0;
+    }
+
+    .hero-bad {
+      display: grid;
+      gap: 20px;
+      place-items: center;
+      text-align: center;
+    }
+
+    .hero-pro {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 20px;
+      align-items: end;
+    }
+
+    .eyebrow-bad {
+      font-size: 13px;
+      font-weight: 700;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .eyebrow-pro {
+      font: 600 12px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn.bad-primary,
+    .btn.bad-secondary {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: none;
+    }
+
+    .btn.bad-primary {
+      background: #111827;
+      color: #fff;
+    }
+
+    .btn.bad-secondary {
+      background: #fff;
+      color: #111827;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn.pro-primary {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #111827;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .16);
+    }
+
+    .btn.pro-secondary {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .86);
+      color: #111827;
+      font-weight: 600;
+      border: 1px solid rgba(15, 23, 42, .1);
+      outline: 1px solid rgba(255, 255, 255, .7);
+      outline-offset: -2px;
+    }
+
+    .card-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card.bad {
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, .11);
+      padding: 18px;
+    }
+
+    .card.pro {
+      background: #fff;
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .1);
+      border-radius: 22px;
+      box-shadow: var(--shadow-pro);
+      padding: 18px;
+      position: relative;
+    }
+
+    .card.pro::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65);
+      pointer-events: none;
+    }
+
+    .stat {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .shot {
+      height: 160px;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .65), rgba(255, 255, 255, 0)) top/100% 30% no-repeat,
+        linear-gradient(135deg, #e2e8f0, #cbd5e1 55%, #94a3b8);
+      position: relative;
+    }
+
+    .shot.bad {
+      border: 1px solid #d1d5db;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .12);
+    }
+
+    .shot.pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .1);
+      box-shadow: var(--shadow-pro);
+    }
+
+    .shot::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 16px;
+      background:
+        linear-gradient(90deg, #ffffff 0 34%, #eef2ff 34% 58%, #f8fafc 58%),
+        linear-gradient(#e2e8f0 1px, transparent 1px) 0 0 / 100% 28px,
+        linear-gradient(90deg, #e2e8f0 1px, transparent 1px) 0 0 / 28px 100%;
+      mix-blend-mode: screen;
+      opacity: .9;
+    }
+
+    .feature-block {
+      display: grid;
+      gap: 18px;
+    }
+
+    .feature-item.bad .title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-item.bad .desc {
+      color: #6b7280;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .feature-item.pro {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .feature-item.pro strong {
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+
+    .grid-demo {
+      position: relative;
+      height: 180px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .grid-demo.bad {
+      padding: 24px;
+    }
+
+    .grid-demo.pro {
+      padding: 8px;
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background:
+        linear-gradient(var(--line), var(--line)) top/100% 1px no-repeat,
+        linear-gradient(var(--line), var(--line)) bottom/100% 1px no-repeat,
+        #fff;
+    }
+
+    .grid-demo .block {
+      height: 100%;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      border: 1px solid rgba(15, 23, 42, .08);
+      display: grid;
+      place-items: center;
+      color: #475569;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+
+    /* extra modules */
+    .nav-demo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #fff;
+    }
+
+    .nav-demo.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad);
+    }
+
+    .nav-demo.pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro);
+      background: rgba(255, 255, 255, .84);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      font-weight: 700;
+    }
+
+    .brand.pro {
+      font-weight: 650;
+      letter-spacing: -.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      color: #475569;
+      font-size: 14px;
+      align-items: center;
+    }
+
+    .nav-cta {
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: #111827;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .form-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input.bad,
+    .select.bad,
+    .textarea.bad {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .input.pro,
+    .select.pro,
+    .textarea.pro {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid rgba(15, 23, 42, .1);
+      border-radius: 14px;
+      font-size: 14px;
+      outline: none;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+    }
+
+    .input.pro:focus,
+    .select.pro:focus,
+    .textarea.pro:focus {
+      border-color: rgba(37, 99, 235, .42);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .12), inset 0 1px 0 rgba(255, 255, 255, .75);
+    }
+
+    .helper {
+      font-size: 12px;
+      color: #64748b
+    }
+
+    .error {
+      font-size: 12px;
+      color: var(--red)
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #475569
+    }
+
+    .pricing-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .price.bad,
+    .price.pro {
+      padding: 18px;
+      background: #fff
+    }
+
+    .price.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+      box-shadow: var(--shadow-bad);
+    }
+
+    .price.pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 22px;
+      box-shadow: var(--shadow-pro);
+      position: relative;
+    }
+
+    .price.pro.featured {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(239, 246, 255, .95));
+      outline: 1px solid rgba(37, 99, 235, .18);
+      transform: translateY(-4px);
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .badge.bad {
+      background: #eff6ff;
+      color: #1d4ed8
+    }
+
+    .badge.pro {
+      background: rgba(37, 99, 235, .1);
+      color: #1d4ed8;
+      border: 1px solid rgba(37, 99, 235, .14)
+    }
+
+    .money {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -.04em
+    }
+
+    .price ul {
+      padding-left: 18px;
+      margin: 12px 0 0;
+      color: #475569;
+      font-size: 14px
+    }
+
+    .price li {
+      margin: 8px 0
+    }
+
+    .modal-stage {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #f8fafc, #eef2ff);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .modal.bad {
+      width: min(100%, 360px);
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .18);
+      padding: 18px;
+    }
+
+    .modal.pro {
+      width: min(100%, 400px);
+      background: rgba(255, 255, 255, .96);
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 22px;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, .18), 0 4px 18px rgba(15, 23, 42, .08);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .table-shell {
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .table-shell.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      box-shadow: var(--shadow-bad);
+    }
+
+    .table-shell.pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .table-shell.bad th {
+      text-align: left;
+      background: #f8fafc;
+      color: #334155;
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 1px solid #d1d5db;
+    }
+
+    .table-shell.bad td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table-shell.pro th {
+      text-align: left;
+      background: #f8fafc;
+      color: #475569;
+      padding: 11px 14px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(15, 23, 42, .08);
+    }
+
+    .table-shell.pro td {
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(15, 23, 42, .06);
+    }
+
+    .table-shell.pro tr:hover td {
+      background: #fafcff;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status.success {
+      background: rgba(22, 163, 74, .1);
+      color: #166534
+    }
+
+    .status.pending {
+      background: rgba(217, 119, 6, .1);
+      color: #92400e
+    }
+
+    .status.failed {
+      background: rgba(220, 38, 38, .1);
+      color: #991b1b
+    }
+
+    .mobile-stage {
+      display: grid;
+      place-items: center;
+      min-height: 300px;
+      background: linear-gradient(180deg, #e2e8f0, #f8fafc);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .phone {
+      width: 280px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .phone.bad {
+      border: 1px solid #cbd5e1;
+      border-radius: 24px;
+      box-shadow: 0 18px 30px rgba(0, 0, 0, .14);
+    }
+
+    .phone.pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 30px;
+      box-shadow: 0 24px 50px rgba(15, 23, 42, .16), 0 4px 14px rgba(15, 23, 42, .06);
+    }
+
+    .phone-top {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(15, 23, 42, .06);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(248, 250, 252, .92));
+    }
+
+    .phone-body {
+      padding: 14px 16px 18px;
+    }
+
+    .mobile-card.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: none;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .mobile-card.pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro);
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .tips {
+      margin-top: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .93), rgba(255, 255, 255, .82));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      padding: 26px;
+    }
+
+    .tips h3 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -.03em;
+    }
+
+    .tips ol {
+      margin: 0;
+      padding-left: 22px;
+      color: #334155;
+    }
+
+    .tips li {
+      margin: 10px 0;
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #eef2ff;
+      border: 1px solid #dbeafe;
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #334155;
+    }
+
+    .foot {
+      margin-top: 16px;
+      padding: 0 10px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1220px) {
+      .demo-shell {
+        grid-template-columns: 1fr
+      }
+
+      .code-note {
+        min-height: auto
+      }
+
+      .pricing-wrap {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media (max-width: 960px) {
+
+      .hero,
+      .compare,
+      .hero-pro {
+        grid-template-columns: 1fr
+      }
+
+      .section-head {
+        display: block
+      }
+
+      .section-head p {
+        text-align: left;
+        margin-top: 8px
+      }
+    }
+
+    :root {
+      --bg: #f6f8fc;
+      --panel: rgba(255, 255, 255, .84);
+      --card: #fff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, .08);
+      --shadow-soft: 0 12px 30px rgba(15, 23, 42, .06);
+      --shadow-pro: 0 14px 32px rgba(15, 23, 42, .08), 0 2px 8px rgba(15, 23, 42, .04);
+      --shadow-bad: 0 10px 24px rgba(0, 0, 0, .12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "SF Pro Display", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #d97706;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(1200px 500px at 20% -10%, rgba(14, 165, 233, .08), transparent 60%),
+        radial-gradient(1200px 500px at 90% -10%, rgba(99, 102, 241, .06), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+
+    .page {
+      width: min(1480px, calc(100vw - 24px));
+      margin: 20px auto 72px;
+    }
+
+    .canvas {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background:
+        linear-gradient(var(--line), var(--line)) top/100% 1px no-repeat,
+        linear-gradient(var(--line), var(--line)) bottom/100% 1px no-repeat;
+      padding: 8px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 24px;
+      align-items: end;
+      padding: 36px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .74));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      border-radius: 32px;
+      backdrop-filter: blur(10px);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font: 600 12px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #334155;
+      margin: 0 0 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: .98;
+      letter-spacing: -.045em;
+      font-weight: 650;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      max-width: 60ch;
+      font-size: 15px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      background: #111827;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .14);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, .82);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(15, 23, 42, .1);
+      outline: 1px solid rgba(255, 255, 255, .7);
+      outline-offset: -2px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 78ch;
+      text-align: right;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 8px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      min-height: 360px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #0f172ab8;
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #94a3b8
+    }
+
+    .dot.bad {
+      background: #f97316
+    }
+
+    .dot.good {
+      background: #22c55e
+    }
+
+    .demo-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .demo-box {
+      border: 1px dashed rgba(15, 23, 42, .1);
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      min-height: 260px;
+    }
+
+    .code-note {
+      background: #0b1220;
+      color: #d7e3f4;
+      border-radius: 18px;
+      padding: 14px 14px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      box-shadow: 0 10px 24px rgba(2, 6, 23, .18);
+      min-height: 260px;
+    }
+
+    .code-note .title {
+      font-family: var(--sans);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .code-note code {
+      white-space: pre-wrap;
+      color: #e2e8f0;
+    }
+
+    .hl {
+      color: #7dd3fc
+    }
+
+    .val {
+      color: #fcd34d
+    }
+
+    .ok {
+      color: #86efac
+    }
+
+    .warn {
+      color: #fca5a5
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .brand {
+      font-weight: 700
+    }
+
+    .brand.pro {
+      font-weight: 650;
+      letter-spacing: -.03em
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase
+    }
+
+    .badge.pro {
+      background: rgba(37, 99, 235, .1);
+      color: #1d4ed8;
+      border: 1px solid rgba(37, 99, 235, .14)
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .status.success {
+      background: rgba(22, 163, 74, .1);
+      color: #166534
+    }
+
+    .status.pending {
+      background: rgba(217, 119, 6, .1);
+      color: #92400e
+    }
+
+    .status.failed {
+      background: rgba(220, 38, 38, .1);
+      color: #991b1b
+    }
+
+    /* common cards */
+    .simple-bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad);
+      background: #fff
+    }
+
+    .simple-pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro);
+      background: #fff
+    }
+
+    /* tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .tab.bad {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px
+    }
+
+    .tab.bad.active {
+      background: #eff6ff;
+      color: #1d4ed8
+    }
+
+    .tab.pro {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      font-size: 14px;
+      color: #475569;
+      font-weight: 600
+    }
+
+    .tab.pro.active {
+      background: rgba(37, 99, 235, .1);
+      color: #1d4ed8;
+      box-shadow: inset 0 0 0 1px rgba(37, 99, 235, .14)
+    }
+
+    .tab-panel {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 16px
+    }
+
+    /* sidebar */
+    .sidebar-shell {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 14px
+    }
+
+    .sidebar.bad {
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad)
+    }
+
+    .sidebar.pro {
+      padding: 12px;
+      background: rgba(255, 255, 255, .88);
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro)
+    }
+
+    .side-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      color: #475569
+    }
+
+    .side-item.bad.active {
+      background: #eff6ff;
+      color: #1d4ed8
+    }
+
+    .side-item.pro.active {
+      background: rgba(37, 99, 235, .1);
+      color: #1d4ed8;
+      font-weight: 600
+    }
+
+    .content-pane {
+      padding: 16px;
+      min-height: 180px
+    }
+
+    /* empty state */
+    .empty.bad,
+    .empty.pro {
+      display: grid;
+      place-items: center;
+      min-height: 240px;
+      text-align: center
+    }
+
+    .icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px
+    }
+
+    .icon-circle.bad {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1
+    }
+
+    .icon-circle.pro {
+      background: linear-gradient(180deg, #f8fbff, #eef4ff);
+      outline: 1px solid rgba(37, 99, 235, .12);
+      box-shadow: var(--shadow-pro)
+    }
+
+    /* toast alert */
+    .stack {
+      display: grid;
+      gap: 12px
+    }
+
+    .toast.bad,
+    .alert.bad {
+      padding: 14px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: var(--shadow-bad);
+      background: #fff
+    }
+
+    .toast.pro,
+    .alert.pro {
+      padding: 14px 16px;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 16px;
+      box-shadow: var(--shadow-pro);
+      background: #fff
+    }
+
+    .alert.pro.info {
+      background: linear-gradient(180deg, #f8fbff, #f3f8ff)
+    }
+
+    .toast-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    /* search filter */
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center
+    }
+
+    .search.bad,
+    .filter.bad {
+      padding: 11px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .search.pro,
+    .filter.pro {
+      padding: 10px 12px;
+      border: 1px solid rgba(15, 23, 42, .1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .92);
+      font-size: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+    }
+
+    /* dashboard */
+    .widget-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .widget.bad {
+      padding: 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad);
+      background: #fff
+    }
+
+    .widget.pro {
+      padding: 16px;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro);
+      background: #fff
+    }
+
+    .spark {
+      height: 54px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #dbeafe, #eff6ff);
+      margin-top: 12px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .spark:after {
+      content: "";
+      position: absolute;
+      inset: 16px 8px 10px 8px;
+      border-radius: 999px;
+      border-top: 3px solid rgba(37, 99, 235, .7);
+      transform: skewX(-10deg)
+    }
+
+    /* auth */
+    .auth-stage {
+      min-height: 280px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #eef2ff, #f8fafc);
+      border-radius: 18px;
+      padding: 18px
+    }
+
+    .auth.bad {
+      width: min(100%, 380px);
+      padding: 18px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad);
+      background: #fff
+    }
+
+    .auth.pro {
+      width: min(100%, 400px);
+      padding: 22px;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 22px;
+      box-shadow: var(--shadow-pro);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px)
+    }
+
+    .input.bad,
+    .input.pro {
+      width: 100%;
+      padding: 11px 13px;
+      font-size: 14px
+    }
+
+    .input.bad {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px
+    }
+
+    .input.pro {
+      border: 1px solid rgba(15, 23, 42, .1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .92)
+    }
+
+    /* settings */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .setting.bad,
+    .setting.pro {
+      padding: 16px;
+      background: #fff
+    }
+
+    .setting.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad)
+    }
+
+    .setting.pro {
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro)
+    }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      position: relative
+    }
+
+    .switch.bad {
+      background: #cbd5e1
+    }
+
+    .switch.pro {
+      background: #bfdbfe
+    }
+
+    .switch:after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #fff
+    }
+
+    .switch.pro:after {
+      left: 21px
+    }
+
+    .tips {
+      margin-top: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .93), rgba(255, 255, 255, .82));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      padding: 26px;
+    }
+
+    .tips h3 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -.03em;
+    }
+
+    .tips ol {
+      margin: 0;
+      padding-left: 22px;
+      color: #334155;
+    }
+
+    .tips li {
+      margin: 10px 0;
+    }
+
+    .foot {
+      margin-top: 16px;
+      padding: 0 10px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #eef2ff;
+      border: 1px solid #dbeafe;
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #334155;
+    }
+
+    @media (max-width: 1220px) {
+      .demo-shell {
+        grid-template-columns: 1fr
+      }
+
+      .code-note {
+        min-height: auto
+      }
+
+      .sidebar-shell,
+      .settings-grid,
+      .widget-grid,
+      .toolbar {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media (max-width: 960px) {
+
+      .hero,
+      .compare,
+      .sidebar-shell {
+        grid-template-columns: 1fr
+      }
+
+      .section-head {
+        display: block
+      }
+
+      .section-head p {
+        text-align: left;
+        margin-top: 8px
+      }
+    }
+
+    :root {
+      --bg: #f6f8fc;
+      --panel: rgba(255, 255, 255, .84);
+      --card: #fff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, .08);
+      --shadow-soft: 0 12px 30px rgba(15, 23, 42, .06);
+      --shadow-pro: 0 14px 32px rgba(15, 23, 42, .08), 0 2px 8px rgba(15, 23, 42, .04);
+      --shadow-bad: 0 10px 24px rgba(0, 0, 0, .12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "SF Pro Display", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #d97706;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(1200px 500px at 20% -10%, rgba(14, 165, 233, .08), transparent 60%),
+        radial-gradient(1200px 500px at 90% -10%, rgba(99, 102, 241, .06), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+
+    .page {
+      width: min(1480px, calc(100vw - 24px));
+      margin: 20px auto 72px;
+    }
+
+    .canvas {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background:
+        linear-gradient(var(--line), var(--line)) top/100% 1px no-repeat,
+        linear-gradient(var(--line), var(--line)) bottom/100% 1px no-repeat;
+      padding: 8px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 24px;
+      align-items: end;
+      padding: 36px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .74));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      border-radius: 32px;
+      backdrop-filter: blur(10px);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font: 600 12px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #334155;
+      margin: 0 0 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: .98;
+      letter-spacing: -.045em;
+      font-weight: 650;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      max-width: 60ch;
+      font-size: 15px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      background: #111827;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .14);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, .82);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(15, 23, 42, .1);
+      outline: 1px solid rgba(255, 255, 255, .7);
+      outline-offset: -2px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 78ch;
+      text-align: right;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 8px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      min-height: 360px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #0f172ab8;
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #94a3b8
+    }
+
+    .dot.bad {
+      background: #f97316
+    }
+
+    .dot.good {
+      background: #22c55e
+    }
+
+    .demo-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .demo-box {
+      border: 1px dashed rgba(15, 23, 42, .1);
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      min-height: 260px;
+    }
+
+    .code-note {
+      background: #0b1220;
+      color: #d7e3f4;
+      border-radius: 18px;
+      padding: 14px 14px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      box-shadow: 0 10px 24px rgba(2, 6, 23, .18);
+      min-height: 260px;
+    }
+
+    .code-note .title {
+      font-family: var(--sans);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .code-note code {
+      white-space: pre-wrap;
+      color: #e2e8f0;
+    }
+
+    .hl {
+      color: #7dd3fc
+    }
+
+    .val {
+      color: #fcd34d
+    }
+
+    .ok {
+      color: #86efac
+    }
+
+    .warn {
+      color: #fca5a5
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .brand {
+      font-weight: 700
+    }
+
+    .brand.pro {
+      font-weight: 650;
+      letter-spacing: -.03em
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase
+    }
+
+    .badge.pro {
+      background: rgba(37, 99, 235, .1);
+      color: #1d4ed8;
+      border: 1px solid rgba(37, 99, 235, .14)
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .status.success {
+      background: rgba(22, 163, 74, .1);
+      color: #166534
+    }
+
+    .status.pending {
+      background: rgba(217, 119, 6, .1);
+      color: #92400e
+    }
+
+    .status.failed {
+      background: rgba(220, 38, 38, .1);
+      color: #991b1b
+    }
+
+    .simple-bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad);
+      background: #fff
+    }
+
+    .simple-pro {
+      border: none;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro);
+      background: #fff
+    }
+
+    .btn-sm {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .chip {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px
+    }
+
+    /* pagination */
+    .pagination {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .page-item.bad {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px
+    }
+
+    .page-item.bad.active {
+      background: #eff6ff;
+      color: #1d4ed8
+    }
+
+    .page-item.pro {
+      padding: 8px 11px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      font-size: 14px;
+      color: #475569;
+      font-weight: 600
+    }
+
+    .page-item.pro.active {
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .14)
+    }
+
+    .page-item.pro.ghost {
+      outline: 1px solid rgba(2, 6, 23, .08);
+      background: #fff
+    }
+
+    /* dropdown */
+    .dropdown-shell {
+      display: grid;
+      gap: 12px
+    }
+
+    .select-trigger.bad,
+    .select-trigger.pro {
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .select-trigger.bad {
+      padding: 11px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff
+    }
+
+    .select-trigger.pro {
+      padding: 10px 12px;
+      border: 1px solid rgba(15, 23, 42, .1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75)
+    }
+
+    .menu.bad {
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      box-shadow: var(--shadow-bad);
+      overflow: hidden
+    }
+
+    .menu.pro {
+      margin-top: 10px;
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 16px;
+      box-shadow: var(--shadow-pro);
+      overflow: hidden
+    }
+
+    .menu-item {
+      padding: 11px 13px;
+      background: #fff;
+      font-size: 14px
+    }
+
+    .menu.pro .menu-item:hover {
+      background: #fafcff
+    }
+
+    .menu-item.active {
+      color: #1d4ed8;
+      background: rgba(37, 99, 235, .06)
+    }
+
+    /* drawer */
+    .drawer-stage {
+      min-height: 280px;
+      display: grid;
+      place-items: end;
+      background: linear-gradient(180deg, #eef2ff, #f8fafc);
+      border-radius: 18px;
+      padding: 18px
+    }
+
+    .drawer.bad {
+      width: min(100%, 360px);
+      height: 240px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, .14);
+      padding: 18px
+    }
+
+    .drawer.pro {
+      width: min(100%, 400px);
+      height: 250px;
+      background: rgba(255, 255, 255, .96);
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -18px 42px rgba(15, 23, 42, .16), 0 -4px 12px rgba(15, 23, 42, .06);
+      padding: 20px
+    }
+
+    .handle {
+      width: 44px;
+      height: 5px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      margin: 0 auto 14px
+    }
+
+    .drawer.pro .handle {
+      background: #dbeafe
+    }
+
+    /* stepper */
+    .steps {
+      display: grid;
+      gap: 14px
+    }
+
+    .step-row {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start
+    }
+
+    .step-dot.bad,
+    .step-dot.pro {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .step-dot.bad {
+      background: #fff;
+      border: 1px solid #cbd5e1
+    }
+
+    .step-dot.pro {
+      background: rgba(37, 99, 235, .1);
+      color: #1d4ed8;
+      outline: 1px solid rgba(37, 99, 235, .14)
+    }
+
+    .step-card.bad,
+    .step-card.pro {
+      padding: 14px;
+      background: #fff
+    }
+
+    .step-card.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      box-shadow: var(--shadow-bad)
+    }
+
+    .step-card.pro {
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 16px;
+      box-shadow: var(--shadow-pro)
+    }
+
+    /* calendar */
+    .cal.bad,
+    .cal.pro {
+      padding: 14px;
+      background: #fff
+    }
+
+    .cal.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad)
+    }
+
+    .cal.pro {
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro)
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 12px
+    }
+
+    .day {
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      border-radius: 10px
+    }
+
+    .day.bad {
+      border: 1px solid #e5e7eb
+    }
+
+    .day.bad.active {
+      background: #eff6ff;
+      color: #1d4ed8
+    }
+
+    .day.pro {
+      background: #f8fafc
+    }
+
+    .day.pro.active {
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .14)
+    }
+
+    .day.pro.range {
+      background: rgba(37, 99, 235, .08);
+      color: #1d4ed8
+    }
+
+    /* upload */
+    .upload.bad,
+    .upload.pro {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      text-align: center
+    }
+
+    .upload.bad {
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      background: #fff
+    }
+
+    .upload.pro {
+      border: 2px dashed rgba(37, 99, 235, .22);
+      border-radius: 22px;
+      background: linear-gradient(180deg, #fbfdff, #f4f8ff);
+      outline: 1px solid rgba(37, 99, 235, .08)
+    }
+
+    .upload-icon {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    /* detail page */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px
+    }
+
+    .detail-card.bad,
+    .detail-card.pro {
+      padding: 16px;
+      background: #fff
+    }
+
+    .detail-card.bad {
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      box-shadow: var(--shadow-bad)
+    }
+
+    .detail-card.pro {
+      outline: 1px solid rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      box-shadow: var(--shadow-pro)
+    }
+
+    .metric-lg {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -.04em
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px;
+      font-size: 14px
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(15, 23, 42, .08);
+      margin: 12px 0
+    }
+
+    /* profile page */
+    .profile-shell {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      align-items: start
+    }
+
+    .avatar.bad,
+    .avatar.pro {
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 28px
+    }
+
+    .avatar.bad {
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1
+    }
+
+    .avatar.pro {
+      background: linear-gradient(180deg, #f8fbff, #eef4ff);
+      outline: 1px solid rgba(37, 99, 235, .12);
+      box-shadow: var(--shadow-pro);
+      color: #1d4ed8
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px
+    }
+
+    .chip.bad {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #475569
+    }
+
+    .chip.pro {
+      background: rgba(37, 99, 235, .08);
+      border: 1px solid rgba(37, 99, 235, .12);
+      color: #1d4ed8
+    }
+
+    .tips {
+      margin-top: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .93), rgba(255, 255, 255, .82));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      padding: 26px;
+    }
+
+    .tips h3 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -.03em;
+    }
+
+    .tips ol {
+      margin: 0;
+      padding-left: 22px;
+      color: #334155;
+    }
+
+    .tips li {
+      margin: 10px 0;
+    }
+
+    .foot {
+      margin-top: 16px;
+      padding: 0 10px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #eef2ff;
+      border: 1px solid #dbeafe;
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #334155;
+    }
+
+    @media (max-width: 1220px) {
+      .demo-shell {
+        grid-template-columns: 1fr
+      }
+
+      .code-note {
+        min-height: auto
+      }
+
+      .detail-grid,
+      .profile-shell {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media (max-width: 960px) {
+
+      .hero,
+      .compare,
+      .detail-grid,
+      .profile-shell {
+        grid-template-columns: 1fr
+      }
+
+      .section-head {
+        display: block
+      }
+
+      .section-head p {
+        text-align: left;
+        margin-top: 8px
+      }
+    }
+
+    .hero-quick {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 28px;
+      padding: 0 8px;
+    }
+
+    .quick-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .82));
+      border: 1px solid rgba(15, 23, 42, .08);
+      border-radius: 20px;
+      padding: 16px 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, .06);
+    }
+
+    .quick-card .eyebrow {
+      margin-bottom: 10px;
+    }
+
+    .quick-card strong {
+      display: block;
+      font-size: 24px;
+      letter-spacing: -.04em;
+      margin-bottom: 4px;
+    }
+
+    .quick-card p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .why-note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, .18);
+      font-family: var(--sans);
+    }
+
+    .why-title {
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .why-note p {
+      margin: 8px 0 0;
+      color: #cbd5e1;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .why-note strong {
+      color: #f8fafc;
+    }
+
+    @media (max-width: 960px) {
+      .hero-quick {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="canvas">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Frontend Detail Lab / All In One</p>
+          <h1>前端 CSS 专业细节总对照页</h1>
+          <p>把 <span class="kbd">css_dev</span> 下 3 份模板合并为 1 份总表。左侧保留原始效果与原始 CSS，右侧展示专业效果、专业
+            CSS，并额外说明哪些属性在拉开专业感，以及这些写法在实际开发中的使用方式。</p>
+        </div>
+        <div class="actions">
+          <button class="btn">30 个模块总览</button>
+          <button class="btn secondary">左原始 / 右专业 / 右侧含解释</button>
+        </div>
+      </section>
+
+      <section class="hero-quick">
+        <div class="quick-card">
+          <p class="eyebrow">Coverage</p>
+          <strong>30</strong>
+          <p>从 Typography、Layout 一直到 Profile / Account Page，三份模板内容已按编号顺序整合。</p>
+        </div>
+        <div class="quick-card">
+          <p class="eyebrow">Comparison</p>
+          <strong>2 Columns</strong>
+          <p>左侧始终是原始效果，右侧始终是专业效果，版式和阅读路径保持一致，便于逐项对照。</p>
+        </div>
+        <div class="quick-card">
+          <p class="eyebrow">Review Focus</p>
+          <strong>CSS + 原因</strong>
+          <p>两侧都带 CSS 属性；专业侧额外补了“关键属性”和“是否属于实际开发用法”的解释。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">01 / Typography</p>
+            <h2>标题与正文排版</h2>
+          </div>
+          <p>标题的专业感通常来自字重、字距、行高、宽度控制，而不是只靠“换一个字体”。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <h3 class="bad-h1">Track every dollar with clarity</h3>
+                <p class="bad-p">Everything is centered. The line-height is loose, the headline weight is generic, and
+                  the spacing feels like it was never intentionally tuned.</p>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.hero-title {
+  <span class="hl">font-size</span>: <span class="val">44px</span>;
+  <span class="hl">font-weight</span>: <span class="val">700</span>;
+  <span class="hl">letter-spacing</span>: <span class="val">0</span>;
+  <span class="hl">line-height</span>: <span class="val">1.18</span>;
+  <span class="hl">text-align</span>: <span class="val">center</span>;
+}
+
+.body-copy {
+  <span class="hl">font-size</span>: <span class="val">16px</span>;
+  <span class="hl">line-height</span>: <span class="val">1.8</span>;
+  <span class="hl">max-width</span>: <span class="val">100%</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <h3 class="pro-h1">Track every dollar with clarity</h3>
+                <p class="pro-p">更紧的标题字距、更克制的正文宽度、更明确的左对齐，会立刻提升信息层级和阅读节奏。</p>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.hero-title {
+  <span class="hl">font-size</span>: <span class="val">50px</span>;
+  <span class="hl">font-weight</span>: <span class="val">650</span>;
+  <span class="hl">letter-spacing</span>: <span class="val">-0.05em</span>;
+  <span class="hl">line-height</span>: <span class="val">0.97</span>;
+  <span class="hl">text-align</span>: <span class="val">left</span>;
+}
+
+.body-copy {
+  <span class="hl">font-size</span>: <span class="val">15px</span>;
+  <span class="hl">line-height</span>: <span class="val">1.65</span>;
+  <span class="hl">max-width</span>: <span class="val">48ch</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>font-weight: 650、letter-spacing: -0.05em、line-height: 0.97 和 max-width: 11ch
+                    让标题更紧、更有重心；15px / 1.65 的正文节奏也更稳。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是实际项目里非常常见的写法，尤其在 landing page、营销页和产品首页中，通常会和品牌字体、断点一起微调。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">02 / Layout</p>
+            <h2>全置中 Hero vs 分栏 Hero</h2>
+          </div>
+          <p>营销页很忌讳所有元素都堆在中间。分栏布局更有方向感和节奏。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box hero-bad">
+                <div>
+                  <div class="eyebrow-bad">Revenue Dashboard</div>
+                  <h3 class="bad-h1" style="font-size:38px;margin-bottom:12px;">Simple hero section</h3>
+                  <p class="bad-p" style="font-size:15px;">标题、副标题、按钮全部堆在中间，虽然能用，但视觉节奏很平。</p>
+                </div>
+                <div class="btn-row">
+                  <button class="btn bad-primary">Get started</button>
+                  <button class="btn bad-secondary">Learn more</button>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.hero {
+  <span class="hl">display</span>: <span class="val">grid</span>;
+  <span class="hl">grid-template-columns</span>: <span class="val">1fr</span>;
+  <span class="hl">text-align</span>: <span class="val">center</span>;
+  <span class="hl">justify-items</span>: <span class="val">center</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box hero-pro">
+                <div>
+                  <div class="eyebrow-pro">Revenue Dashboard</div>
+                  <h3 class="pro-h1" style="font-size:40px;max-width:10ch;">Simple hero section</h3>
+                </div>
+                <div>
+                  <p class="pro-p" style="margin-bottom:14px;">把主标题放左边，说明和动作放右边，页面会更像真正被设计过的首页。</p>
+                  <div class="btn-row">
+                    <button class="btn pro-primary">Get started</button>
+                    <button class="btn pro-secondary">Learn more</button>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.hero {
+  <span class="hl">display</span>: <span class="val">grid</span>;
+  <span class="hl">grid-template-columns</span>: <span class="val">3fr 2fr</span>;
+  <span class="hl">align-items</span>: <span class="val">end</span>;
+  <span class="hl">gap</span>: <span class="val">20px</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>grid-template-columns: 3fr 2fr、align-items: end
+                    和更克制的文案宽度一起拉出了主次层级，让页面重心不再平均分散。</p>
+                  <p><strong>是否属于实际开发用法：</strong>属于真实开发里的常见布局方式，一般会用 Grid 或 Flex 组合实现，并补上移动端断点。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">03 / Border & Shadow</p>
+            <h2>实色边框 + 阴影 vs 低透明度 outline</h2>
+          </div>
+          <p>新手常见问题是边框太实、阴影太黑，叠在一起看起来发脏。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="card-row">
+                  <div class="card bad">
+                    <div class="stat">¥82,451</div>
+                    <div class="muted">Monthly revenue</div>
+                  </div>
+                  <div class="shot bad"></div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 10px 25px rgba(0,0,0,.11)</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="card-row">
+                  <div class="card pro">
+                    <div class="stat">¥82,451</div>
+                    <div class="muted">Monthly revenue</div>
+                  </div>
+                  <div class="shot pro"></div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.card {
+  <span class="hl">border</span>: <span class="val">none</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.10)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08), 0 2px 8px rgba(15,23,42,.04)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>outline: 1px solid rgba(...)、更轻的 box-shadow，以及卡片内侧高光，让边界更细腻，不会像厚边框那样生硬。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是很常见的卡片处理手法，但实际项目里通常会沉淀成 design token，而不是每张卡片单独硬编码。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">04 / Buttons</p>
+            <h2>按钮体积控制与视觉对齐</h2>
+          </div>
+          <p>专业按钮更紧凑，主次按钮是一个体系，不是两个孤立样式。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box" style="display:grid;place-items:center;">
+                <div class="btn-row"><button class="btn bad-primary">Start free trial</button><button
+                    class="btn bad-secondary">Book demo</button></div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.btn {
+  <span class="hl">padding</span>: <span class="val">12px 24px</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}
+
+.btn-secondary {
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box" style="display:grid;place-items:center;">
+                <div class="btn-row"><button class="btn pro-primary">Start free trial</button><button
+                    class="btn pro-secondary">Book demo</button></div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.btn {
+  <span class="hl">padding</span>: <span class="val">10px 16px</span>;
+  <span class="hl">border-radius</span>: <span class="val">999px</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}
+
+.btn-secondary {
+  <span class="hl">border</span>: <span class="val">1px solid rgba(15,23,42,.10)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(255,255,255,.7)</span>;
+  <span class="hl">outline-offset</span>: <span class="val">-2px</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>padding: 10px 16px、border-radius: 999px、font-weight: 600
+                    和统一的边界处理，让按钮体积更克制、视觉更整齐。</p>
+                  <p><strong>是否属于实际开发用法：</strong>非常符合实际开发习惯，通常会做成 Button 组件的 size 和 variant，不会在页面里散落手写。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">05 / Feature Copy</p>
+            <h2>标题块 + 正文块 vs 行内标题</h2>
+          </div>
+          <p>行内标题更紧凑，更有现代 SaaS 风格。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="feature-block">
+                  <div class="feature-item bad">
+                    <div class="title">Unified income tracking</div>
+                    <div class="desc">View all revenue streams in one place and understand where every dollar is coming
+                      from.</div>
+                  </div>
+                  <div class="feature-item bad">
+                    <div class="title">Tax preparation</div>
+                    <div class="desc">Keep everything organized for quarter-end reporting and yearly tax preparation.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.feature-title {
+  <span class="hl">font-size</span>: <span class="val">20px</span>;
+  <span class="hl">font-weight</span>: <span class="val">700</span>;
+  <span class="hl">margin-bottom</span>: <span class="val">8px</span>;
+}
+
+.feature-desc {
+  <span class="hl">line-height</span>: <span class="val">1.7</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="feature-block">
+                  <div class="feature-item pro"><strong>Unified income tracking.</strong> 在一个视图里聚合所有收入来源，减少切换的认知负担。
+                  </div>
+                  <div class="feature-item pro"><strong>Tax preparation.</strong> 把季度报表和年度整理提前嵌入流程，而不是最后补救。</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.feature-copy {
+  <span class="hl">font-size</span>: <span class="val">18px</span>;
+  <span class="hl">line-height</span>: <span class="val">1.7</span>;
+  <span class="hl">color</span>: <span class="val">#64748b</span>;
+}
+
+.feature-copy strong {
+  <span class="hl">letter-spacing</span>: <span class="val">-0.02em</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>18px / 1.7 的正文节奏、较轻的文字颜色，以及 strong 的字距收紧，让卖点读起来像一句完整说明，而不是碎块堆叠。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这类写法在 feature list、卖点区和产品说明区很常见，通常通过内容组件或富文本样式统一输出。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">06 / Eyebrow</p>
+            <h2>普通小标题 vs Monospace 眉题</h2>
+          </div>
+          <p>这是一个成本很低但收益很高的精致感来源。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="eyebrow-bad">Testimonials</div>
+                <h3 style="font-size:34px;margin:0 0 10px;">Loved by modern finance teams</h3>
+                <p class="pro-p">普通 sans-serif 小标题很安全，但不够有识别度。</p>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.eyebrow {
+  <span class="hl">font-size</span>: <span class="val">13px</span>;
+  <span class="hl">font-weight</span>: <span class="val">700</span>;
+  <span class="hl">color</span>: <span class="val">#6b7280</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="eyebrow-pro">Testimonials</div>
+                <h3 style="font-size:34px;letter-spacing:-.04em;margin:0 0 10px;">Loved by modern finance teams</h3>
+                <p class="pro-p">等宽字体、全大写、拉开字距，让标签带出更强的设计语气。</p>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.eyebrow {
+  <span class="hl">font-family</span>: <span class="val">ui-monospace, monospace</span>;
+  <span class="hl">font-size</span>: <span class="val">12px</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+  <span class="hl">letter-spacing</span>: <span class="val">0.18em</span>;
+  <span class="hl">text-transform</span>: <span class="val">uppercase</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>font-family: ui-monospace、letter-spacing: 0.18em 和 text-transform: uppercase
+                    会明显强化标签感与识别度。</p>
+                  <p><strong>是否属于实际开发用法：</strong>实际开发里常见于 eyebrow、section label、数据标签，但是否使用等宽字体要看整体品牌风格，不是通用强制项。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">07 / Reading Width</p>
+            <h2>铺满容器 vs ch 字符宽度控制</h2>
+          </div>
+          <p>文案宽度不应只服从布局栅格，也要服从阅读体验。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <p style="font-size:16px; line-height:1.8; color:#64748b;">
+                  这段正文直接铺满了可用空间，一旦屏幕变宽，用户每一行扫描的长度会明显变长，阅读负担会变重，也会让营销页面显得更松、更散。</p>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.text-block {
+  <span class="hl">max-width</span>: <span class="val">100%</span>;
+  <span class="hl">line-height</span>: <span class="val">1.8</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <p class="pro-p" style="max-width:40ch;">这段正文把宽度收敛在 40ch 左右，让一行文本控制在更舒服的阅读节奏里。</p>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.text-block {
+  <span class="hl">max-width</span>: <span class="val">40ch</span>;
+  <span class="hl">line-height</span>: <span class="val">1.65</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>max-width: 40ch 搭配 line-height: 1.65，把每行字数压在舒适区间里，阅读节奏会马上变顺。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是正文排版里非常实用的真实做法，尤其适合介绍文案、说明文和摘要区。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">08 / Canvas Grid</p>
+            <h2>无边界系统 vs Canvas Grid</h2>
+          </div>
+          <p>没有插画时，边界系统本身就能给页面带来秩序感。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="grid-demo bad">
+                  <div class="block">内容区块</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.page {
+  <span class="hl">padding</span>: <span class="val">0</span>;
+}
+
+.section {
+  <span class="hl">border</span>: <span class="val">none</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="grid-demo pro">
+                  <div class="block">内容区块</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.canvas {
+  <span class="hl">border-left</span>: <span class="val">1px solid rgba(15,23,42,.08)</span>;
+  <span class="hl">border-right</span>: <span class="val">1px solid rgba(15,23,42,.08)</span>;
+  <span class="hl">padding</span>: <span class="val">8px</span>;
+}
+
+.section {
+  <span class="hl">border-top</span>: <span class="val">1px solid rgba(15,23,42,.08)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>border-left、border-right、顶部和底部细线，再配合统一 padding，形成了更稳定的页面画布与栅格边界。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这种 canvas grid 更常见于品牌页、作品集或设计感较强的后台首页；真实项目会作为页面容器规范来复用。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">09 / Navbar</p>
+            <h2>普通导航栏 vs 精修导航栏</h2>
+          </div>
+          <p>导航栏最容易暴露字体、间距、边界、按钮体系是否统一。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="nav-demo bad">
+                  <div class="brand">Axiom</div>
+                  <div class="nav-links"><span>Product</span><span>Pricing</span><span>Docs</span></div>
+                  <div class="nav-cta">Sign up</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.navbar {
+  <span class="hl">padding</span>: <span class="val">14px 16px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 10px 24px rgba(0,0,0,.12)</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="nav-demo pro">
+                  <div class="brand pro">Axiom</div>
+                  <div class="nav-links"><span>Product</span><span>Pricing</span><span>Docs</span></div>
+                  <div class="nav-cta">Sign up</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.navbar {
+  <span class="hl">padding</span>: <span class="val">14px 16px</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">backdrop-filter</span>: <span class="val">blur(8px)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08), 0 2px 8px rgba(15,23,42,.04)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>outline、border-radius: 18px、box-shadow 和 backdrop-filter: blur(8px)
+                    让导航既有层次又不过分厚重。</p>
+                  <p><strong>是否属于实际开发用法：</strong>实际开发很常见，但 backdrop-filter 上线前要看浏览器兼容和性能，后台系统里也常用更保守的纯色方案。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">10 / Form</p>
+            <h2>表单输入框与焦点态</h2>
+          </div>
+          <p>表单最能体现“工程完成度”：标签、间距、helper text、error state、focus ring 要一起看。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="form-stack">
+                  <div class="field"><label>Work email</label><input class="input bad" value="hello@axiom.io" /></div>
+                  <div class="field"><label>Team size</label><select class="select bad">
+                      <option>1-10</option>
+                    </select></div>
+                  <div class="field"><label>Notes</label><textarea class="textarea bad"
+                      rows="3">Need a demo next week.</textarea></div>
+                  <div class="checkbox-row"><input type="checkbox" checked /> Agree to terms</div>
+                  <button class="btn bad-primary" style="width:100%">Submit</button>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.input {
+  <span class="hl">padding</span>: <span class="val">12px 14px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+
+.input:focus {
+  <span class="hl">outline</span>: <span class="val">none</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="form-stack">
+                  <div class="field"><label>Work email</label><input class="input pro" value="hello@axiom.io" />
+                    <div class="helper">Use your company email for faster approval.</div>
+                  </div>
+                  <div class="field"><label>Team size</label><select class="select pro">
+                      <option>1-10</option>
+                    </select></div>
+                  <div class="field"><label>Notes</label><textarea class="textarea pro"
+                      rows="3">Need a demo next week.</textarea></div>
+                  <div class="checkbox-row"><input type="checkbox" checked /> Agree to terms</div>
+                  <button class="btn pro-primary" style="width:100%">Submit</button>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.input {
+  <span class="hl">padding</span>: <span class="val">11px 13px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(15,23,42,.10)</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.92)</span>;
+}
+
+.input:focus {
+  <span class="hl">border-color</span>: <span class="val">rgba(37,99,235,.42)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 0 0 4px rgba(37,99,235,.12)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>1px 的低对比边框、14px 圆角、半透明背景，以及 focus 时的边框色和外发光，让输入框更像可交互控件而不是静态盒子。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是非常标准的实际开发写法，通常会做成统一的 Input 组件，把默认态、hover 和 focus 态一次封装好。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">11 / Pricing Card</p>
+            <h2>定价卡片</h2>
+          </div>
+          <p>Pricing Card 的核心不只是好不好看，而是层级是否清晰：谁是主推方案，谁是次要方案。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="pricing-wrap">
+                  <div class="price bad">
+                    <div class="brand">Starter</div>
+                    <div class="money">$19</div>
+                    <ul>
+                      <li>Basic analytics</li>
+                      <li>Email support</li>
+                    </ul>
+                  </div>
+                  <div class="price bad">
+                    <div class="brand">Pro</div>
+                    <div class="money">$49</div>
+                    <ul>
+                      <li>Forecasting</li>
+                      <li>Priority support</li>
+                    </ul>
+                  </div>
+                  <div class="price bad">
+                    <div class="brand">Scale</div>
+                    <div class="money">$99</div>
+                    <ul>
+                      <li>Advanced controls</li>
+                      <li>SSO</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.pricing-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 10px 24px rgba(0,0,0,.12)</span>;
+}
+
+<span class="warn">/* 三张卡几乎一样重，没有视觉主次 */</span></code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="pricing-wrap">
+                  <div class="price pro">
+                    <div class="brand">Starter</div>
+                    <div class="money">$19</div>
+                    <ul>
+                      <li>Basic analytics</li>
+                      <li>Email support</li>
+                    </ul>
+                  </div>
+                  <div class="price pro featured">
+                    <div class="badge pro">Most popular</div>
+                    <div class="brand" style="margin-top:10px">Pro</div>
+                    <div class="money">$49</div>
+                    <ul>
+                      <li>Forecasting</li>
+                      <li>Priority support</li>
+                    </ul>
+                  </div>
+                  <div class="price pro">
+                    <div class="brand">Scale</div>
+                    <div class="money">$99</div>
+                    <ul>
+                      <li>Advanced controls</li>
+                      <li>SSO</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.pricing-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08), 0 2px 8px rgba(15,23,42,.04)</span>;
+}
+
+.pricing-card.featured {
+  <span class="hl">transform</span>: <span class="val">translateY(-4px)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.18)</span>;
+  <span class="hl">background</span>: <span class="val">linear-gradient(...)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>outline、22px 圆角、分层阴影，以及 featured 卡片的轻微上移和渐变背景，共同建立了主卡的优先级。</p>
+                  <p><strong>是否属于实际开发用法：</strong>真实项目里很常见，尤其在 pricing、plan selector 和套餐页；常见做法是组件化并配合状态类切换。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">12 / Modal</p>
+            <h2>弹窗</h2>
+          </div>
+          <p>弹窗最容易暴露圆角、阴影、操作按钮、层级与留白是否成熟。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="modal-stage">
+                  <div class="modal bad">
+                    <div class="brand">Delete workspace?</div>
+                    <p class="muted">This action cannot be undone.</p>
+                    <div class="modal-actions"><button class="btn bad-secondary">Cancel</button><button
+                        class="btn bad-primary">Delete</button></div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.modal {
+  <span class="hl">width</span>: <span class="val">360px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 18px 40px rgba(0,0,0,.18)</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="modal-stage">
+                  <div class="modal pro">
+                    <div class="brand pro">Delete workspace?</div>
+                    <p class="muted">This action cannot be undone. All member access and billing history will remain in
+                      audit logs.</p>
+                    <div class="modal-actions"><button class="btn pro-secondary">Cancel</button><button
+                        class="btn pro-primary">Delete</button></div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.modal {
+  <span class="hl">width</span>: <span class="val">400px</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">backdrop-filter</span>: <span class="val">blur(12px)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 24px 64px rgba(15,23,42,.18), 0 4px 18px rgba(15,23,42,.08)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>400px 的克制宽度、22px 圆角、模糊背景和更深一层的阴影，让弹窗层级更清楚，也更像浮在页面上方。</p>
+                  <p><strong>是否属于实际开发用法：</strong>属于常见的实际开发模式，不过 blur 效果会因产品风格和兼容性要求决定是否保留。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">13 / Table</p>
+            <h2>数据表格</h2>
+          </div>
+          <p>表格的专业感来自表头信息密度、行高、hover、状态标签和边界系统，而不是单纯“有线框”。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="table-shell bad">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>ARR</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Northwind</td>
+                        <td>Active</td>
+                        <td>$12,400</td>
+                      </tr>
+                      <tr>
+                        <td>Contoso</td>
+                        <td>Pending</td>
+                        <td>$8,200</td>
+                      </tr>
+                      <tr>
+                        <td>Globex</td>
+                        <td>Failed</td>
+                        <td>$4,100</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>th {
+  <span class="hl">font-size</span>: <span class="val">13px</span>;
+  <span class="hl">padding</span>: <span class="val">12px</span>;
+  <span class="hl">background</span>: <span class="val">#f8fafc</span>;
+}
+
+td {
+  <span class="hl">padding</span>: <span class="val">12px</span>;
+  <span class="hl">border-bottom</span>: <span class="val">1px solid #e5e7eb</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="table-shell pro">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>ARR</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Northwind</td>
+                        <td><span class="status success">Active</span></td>
+                        <td>$12,400</td>
+                      </tr>
+                      <tr>
+                        <td>Contoso</td>
+                        <td><span class="status pending">Pending</span></td>
+                        <td>$8,200</td>
+                      </tr>
+                      <tr>
+                        <td>Globex</td>
+                        <td><span class="status failed">Failed</span></td>
+                        <td>$4,100</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>th {
+  <span class="hl">font-size</span>: <span class="val">12px</span>;
+  <span class="hl">letter-spacing</span>: <span class="val">0.08em</span>;
+  <span class="hl">text-transform</span>: <span class="val">uppercase</span>;
+  <span class="hl">padding</span>: <span class="val">11px 14px</span>;
+}
+
+tr:hover td {
+  <span class="hl">background</span>: <span class="val">#fafcff</span>;
+}
+
+.status {
+  <span class="hl">border-radius</span>: <span class="val">999px</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>表头的 uppercase 与 letter-spacing、统一 padding，以及 hover 行背景，能快速建立表格层级和扫描节奏。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是非常真实的数据表格写法，实际项目里还会继续补齐 sticky header、排序、空态和响应式策略。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">14 / Mobile Hero</p>
+            <h2>移动端首屏</h2>
+          </div>
+          <p>移动端不是桌面端压缩版。卡片密度、留白、标题层级和 CTA 触达性都要重新检查。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="mobile-stage">
+                  <div class="phone bad">
+                    <div class="phone-top">
+                      <div class="brand">Axiom</div>
+                    </div>
+                    <div class="phone-body">
+                      <h3 style="font-size:28px;line-height:1.2;margin:0 0 10px;">Track income in one place</h3>
+                      <p style="font-size:15px;line-height:1.8;color:#64748b;">Get forecasting, expenses, and tax prep
+                        in a single app.</p>
+                      <div class="mobile-card bad">Revenue card</div><button class="btn bad-primary"
+                        style="width:100%">Get started</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.phone {
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">24px</span>;
+}
+
+.mobile-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="mobile-stage">
+                  <div class="phone pro">
+                    <div class="phone-top">
+                      <div class="brand pro">Axiom</div>
+                    </div>
+                    <div class="phone-body">
+                      <div class="eyebrow-pro" style="margin-bottom:10px">Revenue OS</div>
+                      <h3 style="font-size:30px;line-height:1.02;letter-spacing:-.05em;margin:0 0 10px;">Track income in
+                        one place</h3>
+                      <p class="pro-p" style="max-width:none;margin-bottom:14px;">Get forecasting, expenses, and tax
+                        prep in a single app built for modern teams.</p>
+                      <div class="mobile-card pro">Revenue card</div><button class="btn pro-primary"
+                        style="width:100%">Get started</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.phone {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">30px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 24px 50px rgba(15,23,42,.16)</span>;
+}
+
+.mobile-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>手机容器的 outline、30px 圆角、外层投影，以及内部卡片的边界控制，让移动端首屏更像完整产品而不是简单缩略图。</p>
+                  <p><strong>是否属于实际开发用法：</strong>属于真实展示页常用手法，但上线时通常会结合真实断点、设备安全区和更完整的移动端组件规范。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">15 / Tabs</p>
+            <h2>Tabs</h2>
+          </div>
+          <p>Tabs 不是一排按钮，它是信息分组器。关键在于 active 态是否清楚、整体是否轻盈。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="tabs">
+                  <div class="tab bad active">Overview</div>
+                  <div class="tab bad">Revenue</div>
+                  <div class="tab bad">Invoices</div>
+                </div>
+                <div class="tab-panel simple-bad" style="margin-top:14px;">Current tab content</div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.tab {
+  <span class="hl">padding</span>: <span class="val">10px 14px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.tab.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="tabs">
+                  <div class="tab pro active">Overview</div>
+                  <div class="tab pro">Revenue</div>
+                  <div class="tab pro">Invoices</div>
+                </div>
+                <div class="tab-panel simple-pro" style="margin-top:14px;">Current tab content</div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.tab {
+  <span class="hl">padding</span>: <span class="val">8px 12px</span>;
+  <span class="hl">border</span>: <span class="val">none</span>;
+  <span class="hl">border-radius</span>: <span class="val">999px</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}
+.tab.active {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.10)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">inset 0 0 0 1px rgba(37,99,235,.14)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>无边框的 pill 形态、font-weight: 600，以及 active 态的浅色背景和 inset 细边，让 tab 更像导航状态而不是按钮集合。
+                  </p>
+                  <p><strong>是否属于实际开发用法：</strong>这是设计系统里很常见的 Tabs 做法，实际开发会再补 keyboard focus、hover 与 aria 状态。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">16 / Sidebar</p>
+            <h2>Sidebar</h2>
+          </div>
+          <p>Sidebar 容易写得很“管理后台模板化”。专业版本会更克制、更安静，active 态更像引导而不是高亮块。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="sidebar-shell">
+                  <div class="sidebar bad">
+                    <div class="side-item bad active">Dashboard</div>
+                    <div class="side-item">Invoices</div>
+                    <div class="side-item">Settings</div>
+                  </div>
+                  <div class="content-pane simple-bad">Main content area</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.sidebar {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.side-item.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+  <span class="hl">color</span>: <span class="val">#1d4ed8</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="sidebar-shell">
+                  <div class="sidebar pro">
+                    <div class="side-item pro active">Dashboard</div>
+                    <div class="side-item">Invoices</div>
+                    <div class="side-item">Settings</div>
+                  </div>
+                  <div class="content-pane simple-pro">Main content area</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.sidebar {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.88)</span>;
+}
+.side-item.active {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.10)</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>sidebar 的浅 outline、18px 圆角、半透明背景，再配 active 项的低饱和高亮和字重提升，让导航更安静。</p>
+                  <p><strong>是否属于实际开发用法：</strong>实际后台系统里很常见，通常会抽象成导航容器和 menu item 组件，统一 active / hover 规则。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">17 / Empty State</p>
+            <h2>Empty State</h2>
+          </div>
+          <p>空状态不是“没有内容”，而是一次引导用户理解下一步的机会。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box empty bad">
+                <div>
+                  <div class="icon-circle bad">📄</div>
+                  <div class="brand">No invoices</div>
+                  <p class="muted">You have no data.</p><button class="btn" style="margin-top:8px">Create</button>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.empty-icon {
+  <span class="hl">width</span>: <span class="val">56px</span>;
+  <span class="hl">height</span>: <span class="val">56px</span>;
+  <span class="hl">background</span>: <span class="val">#f1f5f9</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box empty pro">
+                <div>
+                  <div class="icon-circle pro">📄</div>
+                  <div class="brand pro">No invoices yet</div>
+                  <p class="muted" style="max-width:34ch;margin:8px auto 0;">Create your first invoice to start tracking
+                    collections and payment status in one place.</p><button class="btn" style="margin-top:12px">Create
+                    invoice</button>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.empty-icon {
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#f8fbff,#eef4ff)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.12)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+
+.empty-copy {
+  <span class="hl">max-width</span>: <span class="val">34ch</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>图标容器的渐变背景、轻 outline、阴影，以及文案 max-width 控制，让 empty state 更像引导而不是简单占位。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是非常常见的真实写法，尤其适合空列表、首次使用和零数据页面；通常会复用成 EmptyState 组件。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">18 / Toast / Alert</p>
+            <h2>Toast / Alert</h2>
+          </div>
+          <p>系统反馈组件要让人一眼知道“发生了什么”和“该不该处理”。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box stack">
+                <div class="toast bad">
+                  <div class="toast-row">
+                    <div>
+                      <div class="brand">Saved</div>
+                      <div class="muted">Changes updated.</div>
+                    </div><span>×</span>
+                  </div>
+                </div>
+                <div class="alert bad">
+                  <div class="brand">Billing failed</div>
+                  <div class="muted">Update card details.</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.toast, .alert {
+  <span class="hl">padding</span>: <span class="val">14px 16px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box stack">
+                <div class="toast pro">
+                  <div class="toast-row">
+                    <div>
+                      <div class="brand pro">Saved successfully</div>
+                      <div class="muted">Your workspace preferences were updated.</div>
+                    </div><span class="status success">Done</span>
+                  </div>
+                </div>
+                <div class="alert pro info">
+                  <div class="brand pro">Billing action required</div>
+                  <div class="muted">Your backup card expires in 5 days. Update it to avoid failed renewals.</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.toast, .alert {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+
+.alert.info {
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#f8fbff,#f3f8ff)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>toast / alert 的轻 outline、16px 圆角、柔和阴影，加上 info 态的浅渐变背景，让提示更有层次又不刺眼。</p>
+                  <p><strong>是否属于实际开发用法：</strong>符合实际开发方式，通常会继续配不同 severity token，并接入自动关闭、图标和动画。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">19 / Search & Filter</p>
+            <h2>Search Bar / Filter Panel</h2>
+          </div>
+          <p>搜索和筛选是“高频操作区”，最怕密度混乱、点击目标过小、视觉权重失衡。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="toolbar"><input class="search bad" value="Search invoices" />
+                  <div class="filter bad">Status</div>
+                  <div class="filter bad">Sort</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.search, .filter {
+  <span class="hl">padding</span>: <span class="val">11px 13px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="toolbar"><input class="search pro" value="Search invoices" />
+                  <div class="filter pro">Status: All</div>
+                  <div class="filter pro">Sort: Recent</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.search, .filter {
+  <span class="hl">padding</span>: <span class="val">10px 12px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(15,23,42,.10)</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.92)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>search 与 filter 统一使用 10px 12px 内边距、14px 圆角、低对比边框和半透明背景，让工具条看起来是一套系统。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这就是实际项目里常见的工具栏写法，通常会做成输入框、筛选器和排序器的统一样式族。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">20 / Dashboard Widget</p>
+            <h2>Dashboard Widget</h2>
+          </div>
+          <p>仪表盘卡片的差别常常不在信息本身，而在标题层级、边界、数字强调和图表占比。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="widget-grid">
+                  <div class="widget bad">
+                    <div class="muted">Revenue</div>
+                    <div style="font-size:28px;font-weight:700">$82,451</div>
+                    <div class="spark"></div>
+                  </div>
+                  <div class="widget bad">
+                    <div class="muted">Expenses</div>
+                    <div style="font-size:28px;font-weight:700">$21,804</div>
+                    <div class="spark"></div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.widget {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 10px 24px rgba(0,0,0,.12)</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="widget-grid">
+                  <div class="widget pro">
+                    <div class="eyebrow" style="margin-bottom:8px">Revenue</div>
+                    <div style="font-size:30px;font-weight:700;letter-spacing:-.04em">$82,451</div>
+                    <div class="muted">+12.4% vs last month</div>
+                    <div class="spark"></div>
+                  </div>
+                  <div class="widget pro">
+                    <div class="eyebrow" style="margin-bottom:8px">Expenses</div>
+                    <div style="font-size:30px;font-weight:700;letter-spacing:-.04em">$21,804</div>
+                    <div class="muted">-3.1% vs last month</div>
+                    <div class="spark"></div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.widget {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+
+.metric {
+  <span class="hl">letter-spacing</span>: <span class="val">-0.04em</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>widget 的 outline、18px 圆角、分层阴影，以及 metric 的负字距，让信息卡片更稳、更像仪表盘部件。</p>
+                  <p><strong>是否属于实际开发用法：</strong>属于非常常见的 dashboard 设计模式，真实开发里会再结合骨架屏、数据状态和图表组件。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">21 / Auth</p>
+            <h2>登录页</h2>
+          </div>
+          <p>登录页不是只要输入框和按钮就结束，结构、层级、说明和品牌语气会直接影响专业感。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="auth-stage">
+                  <div class="auth bad">
+                    <div class="brand">Sign in</div>
+                    <div style="display:grid;gap:10px;margin-top:14px"><input class="input bad" value="Email" /><input
+                        class="input bad" value="Password" /><button class="btn" style="width:100%">Continue</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.auth-card {
+  <span class="hl">padding</span>: <span class="val">18px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="auth-stage">
+                  <div class="auth pro">
+                    <div class="eyebrow" style="margin-bottom:10px">Welcome back</div>
+                    <div class="brand pro" style="font-size:28px;letter-spacing:-.04em">Sign in to Axiom</div>
+                    <p class="muted" style="margin:8px 0 0;">Use your workspace email to continue.</p>
+                    <div style="display:grid;gap:10px;margin-top:14px"><input class="input pro" value="Email" /><input
+                        class="input pro" value="Password" /><button class="btn" style="width:100%">Continue</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.auth-card {
+  <span class="hl">padding</span>: <span class="val">22px</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">background</span>: <span class="val">rgba(255,255,255,.96)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>22px 的卡片内边距、22px 圆角、半透明白底和浅 outline，让登录框既聚焦又不压迫；标题字距收紧也会更显精致。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是实际登录页常见的视觉写法，项目里一般会在 Auth layout 组件层处理容器和表单样式。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">22 / Settings</p>
+            <h2>设置页</h2>
+          </div>
+          <p>设置页最重要的是信息组织和控制密度。要看起来可配置，但不能让人感到吵。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="settings-grid">
+                  <div class="setting bad">
+                    <div class="brand">Email notifications</div>
+                    <div class="muted">Receive updates</div>
+                    <div style="margin-top:14px" class="switch bad"></div>
+                  </div>
+                  <div class="setting bad">
+                    <div class="brand">Two-factor auth</div>
+                    <div class="muted">Extra security</div>
+                    <div style="margin-top:14px" class="switch bad"></div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.setting-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.switch {
+  <span class="hl">background</span>: <span class="val">#cbd5e1</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="settings-grid">
+                  <div class="setting pro">
+                    <div class="brand pro">Email notifications</div>
+                    <div class="muted">Receive weekly summaries and billing alerts.</div>
+                    <div style="margin-top:14px" class="switch pro"></div>
+                  </div>
+                  <div class="setting pro">
+                    <div class="brand pro">Two-factor auth</div>
+                    <div class="muted">Require code verification for admin actions.</div>
+                    <div style="margin-top:14px" class="switch pro"></div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.setting-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+.switch {
+  <span class="hl">background</span>: <span class="val">#bfdbfe</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>setting 卡片的轻 outline、18px 圆角、柔和阴影，再配开关的浅蓝底色，让“可配置”状态更明显。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这种写法在设置页里很常见，真实项目会把卡片和 switch 一并做成可复用组件。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">23 / Pagination</p>
+            <h2>Pagination</h2>
+          </div>
+          <p>分页控件不是“数字按钮列表”，而是浏览节奏控制器。专业版通常更轻、更紧凑。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="pagination">
+                  <div class="page-item bad">Prev</div>
+                  <div class="page-item bad active">1</div>
+                  <div class="page-item bad">2</div>
+                  <div class="page-item bad">3</div>
+                  <div class="page-item bad">Next</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.page-item {
+  <span class="hl">padding</span>: <span class="val">9px 12px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.page-item.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="pagination">
+                  <div class="page-item pro ghost">Prev</div>
+                  <div class="page-item pro active">1</div>
+                  <div class="page-item pro">2</div>
+                  <div class="page-item pro">3</div>
+                  <div class="page-item pro ghost">Next</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.page-item {
+  <span class="hl">padding</span>: <span class="val">8px 11px</span>;
+  <span class="hl">border</span>: <span class="val">none</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+  <span class="hl">font-weight</span>: <span class="val">600</span>;
+}
+.page-item.active {
+  <span class="hl">background</span>: <span class="val">#111827</span>;
+  <span class="hl">color</span>: <span class="val">#fff</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>较小的 padding、12px 圆角、font-weight: 600，以及 active 页的深色反白处理，让分页控件更紧凑、状态更明确。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是实际产品里很常见的分页处理方式，项目中通常还会补禁用态、悬停态和小屏折叠逻辑。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">24 / Dropdown</p>
+            <h2>Dropdown / Select Menu</h2>
+          </div>
+          <p>下拉菜单的专业度主要看 trigger、菜单容器、hover 态和当前选中态是否统一。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box dropdown-shell">
+                <div class="select-trigger bad"><span>Status</span><span>▾</span></div>
+                <div class="menu bad">
+                  <div class="menu-item active">All</div>
+                  <div class="menu-item">Paid</div>
+                  <div class="menu-item">Pending</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.trigger {
+  <span class="hl">padding</span>: <span class="val">11px 13px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.menu {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box dropdown-shell">
+                <div class="select-trigger pro"><span>Status: All</span><span>▾</span></div>
+                <div class="menu pro">
+                  <div class="menu-item active">All</div>
+                  <div class="menu-item">Paid</div>
+                  <div class="menu-item">Pending</div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.trigger {
+  <span class="hl">padding</span>: <span class="val">10px 12px</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(15,23,42,.10)</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.menu {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>trigger 的 14px 圆角、低对比边框，以及 menu 的 outline 和 16px 圆角，共同让下拉容器更像一个完整层级。</p>
+                  <p><strong>是否属于实际开发用法：</strong>属于真实开发的常规写法，实际项目还会配合弹层定位、键盘操作和选中项滚动定位。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">25 / Drawer</p>
+            <h2>Drawer / Slide-over</h2>
+          </div>
+          <p>抽屉组件是“半层级容器”，边角、阴影和顶部 handle 会直接影响专业感。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="drawer-stage">
+                  <div class="drawer bad">
+                    <div class="handle"></div>
+                    <div class="brand">Quick actions</div>
+                    <p class="muted">Manage invoice status and reminders.</p>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.drawer {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px 16px 0 0</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 -8px 24px rgba(0,0,0,.14)</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="drawer-stage">
+                  <div class="drawer pro">
+                    <div class="handle"></div>
+                    <div class="eyebrow" style="margin-bottom:8px">Quick actions</div>
+                    <div class="brand pro">Manage invoice reminders</div>
+                    <p class="muted" style="margin-top:8px">Edit payment status, resend invoice links, and schedule
+                      follow-up reminders.</p>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.drawer {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">24px 24px 0 0</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 -18px 42px rgba(15,23,42,.16)</span>;
+}
+.handle {
+  <span class="hl">background</span>: <span class="val">#dbeafe</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>drawer 的 outline、24px 顶部圆角、向上的分层阴影，以及更轻的 handle 色块，让组件层级和可拖拽感更明确。</p>
+                  <p><strong>是否属于实际开发用法：</strong>很符合真实产品做法，但生产环境里通常会额外处理动效、遮罩、焦点锁定和手势交互。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">26 / Stepper</p>
+            <h2>Stepper / Wizard</h2>
+          </div>
+          <p>向导步骤不是只显示“第几步”，还要让用户感知当前位置和下一步结构。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box steps">
+                <div class="step-row">
+                  <div class="step-dot bad">1</div>
+                  <div class="step-card bad">
+                    <div class="brand">Workspace</div>
+                    <div class="muted">Create your workspace</div>
+                  </div>
+                </div>
+                <div class="step-row">
+                  <div class="step-dot bad">2</div>
+                  <div class="step-card bad">
+                    <div class="brand">Billing</div>
+                    <div class="muted">Add payment method</div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.step-dot {
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+  <span class="hl">background</span>: <span class="val">#fff</span>;
+}
+.step-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">12px</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box steps">
+                <div class="step-row">
+                  <div class="step-dot pro">1</div>
+                  <div class="step-card pro">
+                    <div class="brand pro">Workspace</div>
+                    <div class="muted">Create your workspace and invite the first team members.</div>
+                  </div>
+                </div>
+                <div class="step-row">
+                  <div class="step-dot pro">2</div>
+                  <div class="step-card pro">
+                    <div class="brand pro">Billing</div>
+                    <div class="muted">Add payment method and select the right plan for your team.</div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.step-dot {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.10)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.14)</span>;
+  <span class="hl">color</span>: <span class="val">#1d4ed8</span>;
+}
+.step-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>step-dot 的浅蓝底和 outline、step-card 的轻边界与圆角，让步骤状态更清楚，同时避免传统流程条那种笨重感。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是常见的向导式流程写法，真实开发还会加入 completed、current、error 等状态映射。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">27 / Calendar</p>
+            <h2>Calendar / Date Picker</h2>
+          </div>
+          <p>日历控件要看选中态、范围态、默认态能不能一眼分清，而不是一堆小方格。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="cal bad">
+                  <div class="brand">April 2026</div>
+                  <div class="cal-grid">
+                    <div class="day bad">1</div>
+                    <div class="day bad">2</div>
+                    <div class="day bad">3</div>
+                    <div class="day bad">4</div>
+                    <div class="day bad">5</div>
+                    <div class="day bad">6</div>
+                    <div class="day bad">7</div>
+                    <div class="day bad">8</div>
+                    <div class="day bad">9</div>
+                    <div class="day bad">10</div>
+                    <div class="day bad">11</div>
+                    <div class="day bad">12</div>
+                    <div class="day bad">13</div>
+                    <div class="day bad active">14</div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.day {
+  <span class="hl">border</span>: <span class="val">1px solid #e5e7eb</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.day.active {
+  <span class="hl">background</span>: <span class="val">#eff6ff</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="cal pro">
+                  <div class="brand pro">April 2026</div>
+                  <div class="cal-grid">
+                    <div class="day pro">1</div>
+                    <div class="day pro">2</div>
+                    <div class="day pro">3</div>
+                    <div class="day pro">4</div>
+                    <div class="day pro">5</div>
+                    <div class="day pro">6</div>
+                    <div class="day pro">7</div>
+                    <div class="day pro">8</div>
+                    <div class="day pro">9</div>
+                    <div class="day pro">10</div>
+                    <div class="day pro">11</div>
+                    <div class="day pro range">12</div>
+                    <div class="day pro range">13</div>
+                    <div class="day pro active">14</div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.day {
+  <span class="hl">background</span>: <span class="val">#f8fafc</span>;
+  <span class="hl">border-radius</span>: <span class="val">10px</span>;
+}
+.day.active {
+  <span class="hl">background</span>: <span class="val">#111827</span>;
+  <span class="hl">color</span>: <span class="val">#fff</span>;
+}
+.day.range {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.08)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>day 的统一底色、active 态深色反白，以及 range 态的浅蓝衔接，能马上建立日期选择的主次关系。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这是日历控件里非常常见的生产写法，实际项目还会处理不可选日期、键盘导航和月份切换。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">28 / Upload</p>
+            <h2>Upload / Drag & Drop</h2>
+          </div>
+          <p>上传区最常见的问题是“像一个空盒子”。专业版会让用户更清楚地感知拖拽目标和上传格式。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="upload bad">
+                  <div>
+                    <div class="upload-icon">⬆</div>
+                    <div class="brand">Upload file</div>
+                    <div class="muted">Drag file here</div>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.upload {
+  <span class="hl">border</span>: <span class="val">2px dashed #cbd5e1</span>;
+  <span class="hl">border-radius</span>: <span class="val">16px</span>;
+  <span class="hl">background</span>: <span class="val">#fff</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="upload pro">
+                  <div>
+                    <div class="upload-icon">⬆</div>
+                    <div class="brand pro">Drop files to upload</div>
+                    <div class="muted">CSV, XLSX, or PDF up to 20MB. You can also browse from your device.</div><button
+                      class="btn btn-sm" style="margin-top:12px">Choose files</button>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.upload {
+  <span class="hl">border</span>: <span class="val">2px dashed rgba(37,99,235,.22)</span>;
+  <span class="hl">border-radius</span>: <span class="val">22px</span>;
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#fbfdff,#f4f8ff)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.08)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>2px 虚线边框、22px 圆角、浅渐变底色和额外 outline，让上传区既像拖拽热区，又不会显得太重。</p>
+                  <p><strong>是否属于实际开发用法：</strong>非常常见于上传组件，真实开发会再配合 dragover 状态、进度条、文件校验和错误提示。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">29 / Data Detail</p>
+            <h2>Data Detail Page</h2>
+          </div>
+          <p>详情页的关键不是堆字段，而是把“主信息、状态、补充字段”分层组织好。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="detail-grid">
+                  <div class="detail-card bad">
+                    <div class="brand">Invoice #4821</div>
+                    <div class="muted">Pending</div>
+                    <div class="divider"></div>
+                    <div class="kv">
+                      <div>Customer</div>
+                      <div>Northwind</div>
+                      <div>Due date</div>
+                      <div>Apr 14</div>
+                      <div>Total</div>
+                      <div>$8,400</div>
+                    </div>
+                  </div>
+                  <div class="detail-card bad">
+                    <div class="brand">Notes</div>
+                    <p class="muted">Payment reminder scheduled.</p>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.detail-card {
+  <span class="hl">border</span>: <span class="val">1px solid #d1d5db</span>;
+  <span class="hl">border-radius</span>: <span class="val">14px</span>;
+}
+.kv {
+  <span class="hl">grid-template-columns</span>: <span class="val">120px 1fr</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="detail-grid">
+                  <div class="detail-card pro">
+                    <div class="eyebrow" style="margin-bottom:8px">Invoice</div>
+                    <div class="metric-lg">#4821</div>
+                    <div style="margin-top:8px"><span class="status pending">Pending</span></div>
+                    <div class="divider"></div>
+                    <div class="kv">
+                      <div class="muted">Customer</div>
+                      <div>Northwind</div>
+                      <div class="muted">Due date</div>
+                      <div>Apr 14</div>
+                      <div class="muted">Total</div>
+                      <div>$8,400</div>
+                    </div>
+                  </div>
+                  <div class="detail-card pro">
+                    <div class="brand pro">Activity</div>
+                    <p class="muted">Payment reminder scheduled for Apr 10. Last viewed by billing owner 2 hours ago.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.detail-card {
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(2,6,23,.08)</span>;
+  <span class="hl">border-radius</span>: <span class="val">18px</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+.metric {
+  <span class="hl">letter-spacing</span>: <span class="val">-0.04em</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>detail-card 的 outline、18px 圆角、柔和阴影，以及 metric 的负字距，让详情页的信息块更稳、更好扫读。</p>
+                  <p><strong>是否属于实际开发用法：</strong>这就是实际后台详情页常见的卡片化手法，项目中一般会再补响应式分栏和字段组件规范。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">30 / Profile</p>
+            <h2>Profile / Account Page</h2>
+          </div>
+          <p>个人资料页不是“头像 + 姓名”就结束，标签、角色、联系信息和资料分组都需要有秩序。</p>
+        </div>
+        <div class="compare">
+          <div class="panel">
+            <div class="label"><span class="dot bad"></span>原始效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="profile-shell">
+                  <div class="avatar bad">YD</div>
+                  <div>
+                    <div class="brand">Yue Dong</div>
+                    <div class="muted">Frontend Engineer</div>
+                    <div class="meta-row"><span class="chip bad">Admin</span><span class="chip bad">Taipei</span></div>
+                    <p class="muted" style="margin-top:12px">Works on growth pages and internal design systems.</p>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">原始参数</div><code>.avatar {
+  <span class="hl">background</span>: <span class="val">#e2e8f0</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}
+.chip {
+  <span class="hl">background</span>: <span class="val">#f8fafc</span>;
+  <span class="hl">border</span>: <span class="val">1px solid #cbd5e1</span>;
+}</code>
+              </aside>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label"><span class="dot good"></span>专业效果 + CSS</div>
+            <div class="demo-shell">
+              <div class="demo-box">
+                <div class="profile-shell">
+                  <div class="avatar pro">YD</div>
+                  <div>
+                    <div class="eyebrow" style="margin-bottom:8px">Account profile</div>
+                    <div class="brand pro" style="font-size:28px;letter-spacing:-.04em">Yue Dong</div>
+                    <div class="muted">Frontend Engineer</div>
+                    <div class="meta-row"><span class="chip pro">Admin</span><span class="chip pro">Taipei</span><span
+                        class="chip pro">Design Systems</span></div>
+                    <p class="muted" style="margin-top:12px;max-width:42ch">Works on growth pages, component libraries,
+                      and internal visual review standards for product teams.</p>
+                  </div>
+                </div>
+              </div>
+              <aside class="code-note">
+                <div class="title">专业参数</div><code>.avatar {
+  <span class="hl">background</span>: <span class="val">linear-gradient(180deg,#f8fbff,#eef4ff)</span>;
+  <span class="hl">outline</span>: <span class="val">1px solid rgba(37,99,235,.12)</span>;
+  <span class="hl">box-shadow</span>: <span class="val">0 14px 32px rgba(15,23,42,.08)</span>;
+}
+.chip {
+  <span class="hl">background</span>: <span class="val">rgba(37,99,235,.08)</span>;
+  <span class="hl">border</span>: <span class="val">1px solid rgba(37,99,235,.12)</span>;
+}</code>
+                <div class="why-note">
+                  <div class="why-title">专业效果说明</div>
+                  <p><strong>关键属性：</strong>avatar 的渐变背景、outline、阴影，以及 chip 的浅色背景和边框，让个人页信息层级更完整，也更有身份感。</p>
+                  <p><strong>是否属于实际开发用法：</strong>属于真实账号页和成员页里常见的样式组织方式，实际开发通常会把 avatar、tag、meta row 全部组件化。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="tips">
+        <h3>这份合并版最适合怎么用</h3>
+        <ol>
+          <li>先只看左右视觉差异，判断你第一眼感受到的“专业感”到底来自哪里。</li>
+          <li>再对照两边 CSS，确认差异是来自排版、边界、状态层级，还是信息密度控制。</li>
+          <li>最后阅读右侧新增说明，把这些细节判断转成可复用的开发规则，而不是停留在“感觉更高级”。</li>
+        </ol>
+      </section>
+
+      <div class="foot">合并来源：v3（01-14）+ v4（15-22）+ v5（23-30）。当前文件用于统一浏览、教学对照和前端 code review 训练。</div>
+    </div>
+  </div>
+</body>
+
+</html>
